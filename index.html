@@ -490,14 +490,20 @@ function parseCSV(text,fname){
 }
 function parseXLSX(buf,fname){
   const wb=XLSX.read(buf,{type:'array'});
-  // Find the right sheet: prefer "DE", otherwise take the sheet with the most columns (>=10)
-  let sheetName = wb.SheetNames[0];
-  if(wb.SheetNames.includes('DE')) {
+  // Find the right sheet:
+  // 1. Skip hidden sheets (SheetJS stores state in wb.Workbook.Sheets)
+  // 2. Prefer "DE", otherwise take the visible sheet with the most columns
+  const sheetStates = {};
+  if(wb.Workbook && wb.Workbook.Sheets){
+    wb.Workbook.Sheets.forEach(s=>{ sheetStates[s.name]=s.Hidden; });
+  }
+  const visibleSheets = wb.SheetNames.filter(n => !sheetStates[n]);
+  let sheetName = visibleSheets[0] || wb.SheetNames[0];
+  if(visibleSheets.includes('DE')) {
     sheetName = 'DE';
   } else {
-    // Pick sheet with most columns as fallback
     let maxCols = 0;
-    for(const name of wb.SheetNames){
+    for(const name of visibleSheets){
       const ws = wb.Sheets[name];
       const r = XLSX.utils.sheet_to_json(ws,{header:1,defval:'',blankrows:false});
       const cols = r[0]?r[0].length:0;
