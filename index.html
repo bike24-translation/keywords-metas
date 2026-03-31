@@ -1,6 +1,13 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIKE24 SEO Keyword Research Tool & Meta Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@700;800;900&family=Inter:wght@400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --blue:#0072E8;--yellow:#FFD105;--dark:#181B21;
@@ -9,17 +16,20 @@
   --gray600:#252936;--gray500:#506688;--gray100:#F1F5F9;
   --radius:10px;--shadow:0 4px 24px rgba(0,114,232,0.09);
 }
-body{font-family:'Inter',sans-serif;font-weight:500;background:var(--gray100);color:var(--dark)}
+body{font-family:'Inter',sans-serif;font-weight:500;background:var(--gray100);color:var(--dark);min-height:100vh}
 
+/* TOPBAR */
 .topbar{background:var(--dark);padding:0 32px;height:80px;display:flex;align-items:center;gap:20px;border-bottom:3px solid var(--blue)}
 .topbar-logo svg{height:56px;width:auto;display:block;flex-shrink:0}
 .topbar-pipe{width:1px;height:36px;background:rgba(255,255,255,.15);flex-shrink:0}
 .topbar-title{font-family:'Barlow',sans-serif;font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#fff}
 .topbar-title span{color:var(--blue300)}
 
+/* GRID */
 .page-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1060px;margin:0 auto;padding:24px 28px 0;align-items:start}
 .col{display:flex;flex-direction:column;gap:16px}
 
+/* CARDS */
 .card{background:#fff;border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
 .card-header{padding:10px 18px;display:flex;align-items:center;gap:9px}
 .card-header.navy  {background:var(--dark)}
@@ -30,32 +40,30 @@ body{font-family:'Inter',sans-serif;font-weight:500;background:var(--gray100);co
 .card-header.devhd h2{color:var(--gray500)}
 .card-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
 
+/* DEV PANEL — n8n version: only webhook */
 .dev-panel{background:#0d1117;max-height:0;overflow:hidden;transition:max-height .3s ease}
-.dev-panel.open{max-height:500px}
+.dev-panel.open{max-height:300px}
 .dev-inner{padding:14px 18px;display:flex;flex-direction:column;gap:11px;border-top:1px solid #21262d}
 .dev-field{display:flex;flex-direction:column;gap:4px}
-.dev-label{font-family:'Barlow',sans-serif;font-weight:800;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray500);display:flex;align-items:center;gap:6px}
-.dev-optional{font-size:9px;color:#3d5a73;font-weight:500;letter-spacing:0;text-transform:none;font-style:italic}
+.dev-label{font-family:'Barlow',sans-serif;font-weight:800;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray500)}
+.dev-hint{font-size:10px;color:#3d5a73;font-style:italic;margin-top:2px}
 .dev-input-wrap{position:relative}
 .dev-input{font-family:'Inter',sans-serif;font-weight:500;font-size:11px;color:#c9d1d9;background:#161b22;border:2px solid #30363d;border-radius:var(--radius);padding:7px 36px 7px 10px;width:100%;outline:none;transition:border-color .2s}
 .dev-input:focus{border-color:var(--blue)}
 .dev-input.has-value{border-color:#4ade80}
 .eye-btn{position:absolute;right:9px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:13px;color:var(--gray500);padding:0;line-height:1}
+.n8n-info{background:#0a1628;border:1px solid #1a3050;border-radius:var(--radius);padding:10px 13px;display:flex;gap:10px;align-items:flex-start;margin-top:4px}
+.n8n-info-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.n8n-info-text{font-size:10px;color:#4d7a9e;line-height:1.5}
+.n8n-info-text strong{color:#60a5fa;font-weight:600}
 .dev-save-row{display:flex;gap:8px;align-items:center}
 .btn-devsave{font-family:'Barlow',sans-serif;font-weight:900;font-size:9px;letter-spacing:.1em;text-transform:uppercase;background:var(--blue);color:#fff;border:none;border-radius:7px;padding:8px 14px;cursor:pointer;transition:background .2s}
 .btn-devsave:hover{background:var(--blue500)}
 .dev-saved{font-size:10px;color:#4ade80;display:none}
-
-.demo-banner{background:linear-gradient(135deg,#1a1025,#0d1117);border:1px solid rgba(124,58,237,.4);border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-top:4px}
-.demo-icon{font-size:16px;flex-shrink:0}
-.demo-text{flex:1}
-.demo-title{font-family:'Barlow',sans-serif;font-weight:800;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#a78bfa;margin-bottom:2px}
-.demo-sub{font-size:10px;color:#6b7280;font-style:italic}
-.demo-badge{font-family:'Barlow',sans-serif;font-weight:900;font-size:8px;letter-spacing:.08em;text-transform:uppercase;background:#7C3AED;color:#fff;padding:2px 7px;border-radius:3px;flex-shrink:0}
 .chevron{font-size:10px;color:var(--gray500);transition:transform .25s;display:inline-block}
 .chevron.open{transform:rotate(180deg)}
 
-/* Upload */
+/* UPLOAD */
 .file-drop{border:2px dashed var(--blue300);border-radius:var(--radius);background:#f0f6ff;padding:22px 16px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
 .file-drop:hover,.file-drop.drag{border-color:var(--blue);background:#e6f0fd}
 .file-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
@@ -82,6 +90,7 @@ body{font-family:'Inter',sans-serif;font-weight:500;background:var(--gray100);co
 .fs-remove{margin-left:14px;background:none;border:none;cursor:pointer;font-size:14px;color:var(--gray500);flex-shrink:0;line-height:1;padding:2px;transition:color .15s}
 .fs-remove:hover{color:var(--red)}
 
+/* TABLE */
 .table-wrap{overflow-x:auto;max-height:180px;overflow-y:auto}
 table{width:100%;border-collapse:collapse;font-size:11px}
 th{padding:6px 10px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray500);border-bottom:1px solid var(--gray100);background:#fafafa;position:sticky;top:0}
@@ -89,6 +98,7 @@ td{padding:5px 10px;border-bottom:1px solid var(--gray100);color:var(--dark);max
 tr:hover td{background:var(--blue100)}
 .col-url{color:var(--blue);font-size:10px}
 
+/* LANG PILLS */
 .lang-grid-label{font-family:'Barlow',sans-serif;font-weight:800;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray500);margin-bottom:7px}
 .lang-pills{display:flex;flex-wrap:wrap;gap:6px}
 .lang-pill{display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;border:2px solid var(--gray100);border-radius:9px;cursor:pointer;background:#fff;transition:all .18s;position:relative;min-width:48px}
@@ -104,25 +114,27 @@ tr:hover td{background:var(--blue100)}
 .lang-pill:hover::after{opacity:1}
 .lang-hint{font-size:10px;color:var(--gray500);font-style:italic;margin-top:6px}
 
+/* BUTTONS */
 .btn-submit{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-family:'Barlow',sans-serif;font-weight:900;font-size:13px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px}
 .btn-submit:hover:not(:disabled){background:var(--blue500);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,114,232,.25)}
 .btn-submit:disabled{background:#adbdcc;cursor:not-allowed;opacity:.65}
 .btn-arrow{font-size:15px;transition:transform .2s}
 .btn-submit:hover:not(:disabled) .btn-arrow{transform:translateX(4px)}
 .submit-hint{text-align:center;font-size:10px;color:var(--gray500);font-style:italic}
-.demo-mode-hint{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);border-radius:7px;padding:7px 12px;font-size:10px;color:#a78bfa;text-align:center;display:none}
-.demo-mode-hint.show{display:block}
 
+/* PROGRESS */
 .gen-lang-pills{display:flex;flex-wrap:wrap;gap:5px;padding:10px 18px 0}
 .gp{padding:3px 10px;border-radius:5px;font-family:'Barlow',sans-serif;font-weight:700;font-size:10px;letter-spacing:.07em;text-transform:uppercase;border:2px solid var(--gray100);background:#fff;color:var(--gray500);transition:all .2s}
 .gp.gp-active{border-color:#fcd34d;background:#fffbeb;color:#92400e}
 .gp.gp-done{border-color:#86efac;background:#edfaf3;color:var(--green)}
+.gp.gp-error{border-color:#fca5a5;background:#fef2f2;color:var(--red)}
 .prog-wrap{padding:10px 18px 16px}
 .prog-label{display:flex;justify-content:space-between;font-size:10px;margin-bottom:5px;color:var(--gray500)}
 .prog-pct{font-weight:700;color:var(--blue)}
 .prog-bar{height:4px;background:var(--gray100);border-radius:2px;overflow:hidden}
 .prog-fill{height:100%;background:var(--blue);border-radius:2px;transition:width .4s ease}
 
+/* PROCESSING */
 .proc-card{background:var(--dark);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;display:none}
 .proc-card.active{display:block}
 .proc-inner{padding:20px 24px;display:flex;align-items:center;gap:20px}
@@ -141,8 +153,8 @@ tr:hover td{background:var(--blue100)}
 .proc-step:not(.active):not(.done) .proc-label{color:var(--gray500)}
 .proc-sublabel{font-size:10px;color:var(--gray500);margin-left:16px;font-style:italic}
 .proc-step.active .proc-sublabel{color:rgba(255,100,45,.7)}
-.proc-demo-badge{font-family:'Barlow',sans-serif;font-weight:800;font-size:8px;letter-spacing:.08em;text-transform:uppercase;background:#7C3AED;color:#fff;padding:1px 6px;border-radius:3px;margin-left:6px}
 
+/* RESULTS */
 .result-lang-tabs{display:flex;gap:5px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--gray100)}
 .rlt{padding:3px 10px;border-radius:5px;font-family:'Barlow',sans-serif;font-weight:700;font-size:10px;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border:2px solid var(--gray100);background:#fff;color:var(--gray500);transition:all .15s}
 .rlt:hover{border-color:var(--blue);color:var(--blue)}
@@ -150,6 +162,7 @@ tr:hover td{background:var(--blue100)}
 .rlt.done-tab{background:#edfaf3;border-color:#86efac;color:var(--green)}
 .rlt.done-tab.active{background:var(--green);border-color:var(--green);color:#fff}
 
+/* DOWNLOAD */
 .dl-body{padding:24px 20px;display:flex;flex-direction:column;align-items:center;gap:14px}
 .dl-meta{font-size:11px;color:var(--gray500);text-align:center}
 .dl-buttons{display:flex;gap:10px;width:100%}
@@ -161,6 +174,7 @@ tr:hover td{background:var(--blue100)}
 .btn-dl:disabled{opacity:.35;cursor:not-allowed;transform:none !important;box-shadow:none !important}
 .dl-format-note{font-size:10px;color:var(--gray500);font-style:italic;text-align:center}
 
+/* LOG */
 .log-section{max-width:1060px;margin:20px auto 32px;padding:0 28px}
 .log-card{background:var(--dark);border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.22)}
 .log-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:var(--gray600);border-bottom:1px solid rgba(255,255,255,.07)}
@@ -183,13 +197,15 @@ tr:hover td{background:var(--blue100)}
 .log-line.info  .log-msg{color:#8ba3bf}
 .log-line.ok    .log-msg{color:#4ade80}
 .log-line.warn  .log-msg{color:#fbbf24}
-.log-line.demo  .log-msg{color:#a78bfa}
 .log-line.error .log-msg{color:#f87171}
 .log-line.step  .log-msg{color:#60a5fa;font-weight:600}
+
 .toast{display:none;position:fixed;bottom:24px;right:24px;background:var(--green);color:#fff;font-family:'Barlow',sans-serif;font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:10px 18px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);z-index:999;animation:slideUp .3s ease}
 @keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
 .hidden{display:none!important}
 </style>
+</head>
+<body>
 
 <!-- TOPBAR -->
 <div class="topbar">
@@ -214,10 +230,10 @@ tr:hover td{background:var(--blue100)}
 </div>
 
 <div class="page-grid">
-  <!-- LEFT -->
+  <!-- LEFT: Dev Config · Upload · Languages -->
   <div class="col">
 
-    <!-- Dev Config -->
+    <!-- Developer Config — n8n version: webhook only -->
     <div class="card" style="border:1px solid #21262d">
       <div class="card-header devhd" onclick="toggleDev()">
         <span style="font-size:11px">🔧</span>
@@ -227,26 +243,19 @@ tr:hover td{background:var(--blue100)}
       <div class="dev-panel" id="devPanel">
         <div class="dev-inner">
           <div class="dev-field">
-            <div class="dev-label">Semrush API Key <span class="dev-optional">optional — leave empty for demo mode</span></div>
+            <div class="dev-label">n8n Webhook URL</div>
             <div class="dev-input-wrap">
-              <input type="password" class="dev-input" id="devSemrush" placeholder="Semrush API Key… (leave empty for demo mode)" oninput="onDevInput(this)" autocomplete="off">
-              <button class="eye-btn" onclick="toggleVis('devSemrush',this)">👁</button>
+              <input type="password" class="dev-input" id="devWebhook" placeholder="https://bike24.app.n8n.cloud/webhook/…" oninput="onDevInput(this)" autocomplete="off">
+              <button class="eye-btn" onclick="toggleVis('devWebhook',this)">👁</button>
             </div>
           </div>
-          <div class="dev-field">
-            <div class="dev-label">Claude API Key <span class="dev-optional">for real translations & descriptions</span></div>
-            <div class="dev-input-wrap">
-              <input type="password" class="dev-input" id="devClaude" placeholder="Anthropic API Key…" oninput="onDevInput(this)" autocomplete="off">
-              <button class="eye-btn" onclick="toggleVis('devClaude',this)">👁</button>
+          <div class="n8n-info">
+            <div class="n8n-info-icon">ℹ️</div>
+            <div class="n8n-info-text">
+              <strong>n8n handles all API keys.</strong><br>
+              Semrush API key, Claude API key and all processing logic live in the n8n workflow.
+              This app only sends the CSV data + selected languages to the webhook and receives the processed results back.
             </div>
-          </div>
-          <div class="demo-banner" id="demoBanner">
-            <div class="demo-icon">🚀</div>
-            <div class="demo-text">
-              <div class="demo-title">Demo Mode Active</div>
-              <div class="demo-sub">Semrush search volumes are simulated · Claude generates real metadata (if key is set)</div>
-            </div>
-            <span class="demo-badge">Demo</span>
           </div>
           <div class="dev-save-row">
             <button class="btn-devsave" onclick="saveDevConfig()">Save Config</button>
@@ -299,15 +308,15 @@ tr:hover td{background:var(--blue100)}
           <div class="lang-grid-label">Target languages for output</div>
           <div class="lang-pills">
             <div class="lang-pill all-pill selected" id="pill_ALL" data-title="All languages" onclick="toggleLang('ALL')"><span class="lcode">ALL</span></div>
-            <div class="lang-pill" id="pill_EN" data-title="English"     onclick="toggleLang('EN')"><span class="lcode">EN</span></div>
-            <div class="lang-pill" id="pill_ES" data-title="Spanish"     onclick="toggleLang('ES')"><span class="lcode">ES</span></div>
-            <div class="lang-pill" id="pill_IT" data-title="Italian"     onclick="toggleLang('IT')"><span class="lcode">IT</span></div>
-            <div class="lang-pill" id="pill_NL" data-title="Dutch"       onclick="toggleLang('NL')"><span class="lcode">NL</span></div>
-            <div class="lang-pill" id="pill_FR" data-title="French"      onclick="toggleLang('FR')"><span class="lcode">FR</span></div>
-            <div class="lang-pill" id="pill_FI" data-title="Finnish"     onclick="toggleLang('FI')"><span class="lcode">FI</span></div>
-            <div class="lang-pill" id="pill_PL" data-title="Polish"      onclick="toggleLang('PL')"><span class="lcode">PL</span></div>
-            <div class="lang-pill" id="pill_DK" data-title="Danish"      onclick="toggleLang('DK')"><span class="lcode">DK</span></div>
-            <div class="lang-pill" id="pill_SI" data-title="Slovenian"   onclick="toggleLang('SI')"><span class="lcode">SI</span></div>
+            <div class="lang-pill" id="pill_EN" data-title="English"   onclick="toggleLang('EN')"><span class="lcode">EN</span></div>
+            <div class="lang-pill" id="pill_ES" data-title="Spanish"   onclick="toggleLang('ES')"><span class="lcode">ES</span></div>
+            <div class="lang-pill" id="pill_IT" data-title="Italian"   onclick="toggleLang('IT')"><span class="lcode">IT</span></div>
+            <div class="lang-pill" id="pill_NL" data-title="Dutch"     onclick="toggleLang('NL')"><span class="lcode">NL</span></div>
+            <div class="lang-pill" id="pill_FR" data-title="French"    onclick="toggleLang('FR')"><span class="lcode">FR</span></div>
+            <div class="lang-pill" id="pill_FI" data-title="Finnish"   onclick="toggleLang('FI')"><span class="lcode">FI</span></div>
+            <div class="lang-pill" id="pill_PL" data-title="Polish"    onclick="toggleLang('PL')"><span class="lcode">PL</span></div>
+            <div class="lang-pill" id="pill_DK" data-title="Danish"    onclick="toggleLang('DK')"><span class="lcode">DK</span></div>
+            <div class="lang-pill" id="pill_SI" data-title="Slovenian" onclick="toggleLang('SI')"><span class="lcode">SI</span></div>
           </div>
           <div class="lang-hint" id="langHint">All 9 languages selected</div>
         </div>
@@ -316,10 +325,10 @@ tr:hover td{background:var(--blue100)}
 
   </div>
 
-  <!-- RIGHT -->
+  <!-- RIGHT: Generate · Processing · Results · Download -->
   <div class="col">
 
-    <!-- Generate -->
+    <!-- Run Generation -->
     <div class="card">
       <div class="card-header navy">
         <h2>Run Generation</h2>
@@ -327,17 +336,16 @@ tr:hover td{background:var(--blue100)}
       </div>
       <div class="card-body">
         <button class="btn-submit" id="startBtn" onclick="startGeneration()" disabled>
-          <span>Start Generation</span>
+          <span>Send to n8n &amp; Generate</span>
           <span class="btn-arrow">→</span>
         </button>
-        <div class="submit-hint" id="startHint">Upload a file to get started</div>
-        <div class="demo-mode-hint" id="demoModeHint">🚀 Demo mode — Semrush volumes simulated · real Claude generation</div>
+        <div class="submit-hint" id="startHint">Upload a file and set webhook URL to get started</div>
       </div>
       <div id="runWrap" style="display:none;border-top:1px solid var(--gray100)">
         <div class="gen-lang-pills" id="genPills"></div>
         <div class="prog-wrap">
           <div class="prog-label">
-            <span id="progLabel">Initializing…</span>
+            <span id="progLabel">Sending to n8n…</span>
             <span class="prog-pct" id="progPct">0%</span>
           </div>
           <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
@@ -352,22 +360,19 @@ tr:hover td{background:var(--blue100)}
         <div class="proc-text">
           <div class="proc-step" id="pStep0">
             <div class="proc-dot"></div>
-            <div>
-              <div class="proc-label">Semrush API <span class="proc-demo-badge" id="demoBadgeSV" style="display:none">DEMO</span></div>
-              <div class="proc-sublabel" id="pSub0">Fetching search volumes…</div>
-            </div>
+            <div><div class="proc-label">n8n · Receiving data</div><div class="proc-sublabel" id="pSub0">Sending CSV rows to webhook…</div></div>
           </div>
           <div class="proc-step" id="pStep1">
             <div class="proc-dot"></div>
-            <div><div class="proc-label">Claude · Translation</div><div class="proc-sublabel" id="pSub1">Translating keywords…</div></div>
+            <div><div class="proc-label">Semrush API</div><div class="proc-sublabel" id="pSub1">Fetching search volumes…</div></div>
           </div>
           <div class="proc-step" id="pStep2">
             <div class="proc-dot"></div>
-            <div><div class="proc-label">Code · Meta Title</div><div class="proc-sublabel" id="pSub2">Building title…</div></div>
+            <div><div class="proc-label">Claude · Translation &amp; Meta</div><div class="proc-sublabel" id="pSub2">Generating titles &amp; descriptions…</div></div>
           </div>
           <div class="proc-step" id="pStep3">
             <div class="proc-dot"></div>
-            <div><div class="proc-label">Claude · Meta Description</div><div class="proc-sublabel" id="pSub3">Generating description…</div></div>
+            <div><div class="proc-label">Building output</div><div class="proc-sublabel" id="pSub3">Compiling results…</div></div>
           </div>
         </div>
       </div>
@@ -420,20 +425,29 @@ tr:hover td{background:var(--blue100)}
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-const LANGS_META={EN:{db:'us',langName:'English'},ES:{db:'es',langName:'Spanish'},IT:{db:'it',langName:'Italian'},NL:{db:'nl',langName:'Dutch'},FR:{db:'fr',langName:'French'},FI:{db:'fi',langName:'Finnish'},PL:{db:'pl',langName:'Polish'},DK:{db:'dk',langName:'Danish'},SI:{db:'si',langName:'Slovenian'}};
-const ALL_LANGS=Object.keys(LANGS_META);
-const SLUG_MAP={DE:{s:'online kaufen - Premium Marken',m:'online kaufen - Top Marken',c:'kaufen - Top Marken'},EN:{s:'buy online - premium brands',m:'buy online - top brands',c:'buy - top brands'},ES:{s:'comprar online - marcas premium',m:'comprar online - top marcas',c:'comprar - top marcas'},IT:{s:'acquista online - marchi premium',m:'acquista online - top marchi',c:'acquista - top marchi'},NL:{s:'online kopen - premium merken',m:'online kopen - topmerken',c:'kopen - topmerken'},FR:{s:'acheter en ligne - marques premium',m:'acheter en ligne - top marques',c:'acheter - top marques'},FI:{s:'osta netistä - premium-merkit',m:'osta netistä - huippumerkit',c:'osta - huippumerkit'},PL:{s:'kup online - marki premium',m:'kup online - topowe marki',c:'kup - topowe marki'},DK:{s:'køb online - premium mærker',m:'køb online - top mærker',c:'køb - top mærker'},SI:{s:'kupi online - premium znamke',m:'kupi online - top znamke',c:'kupi - top znamke'}};
+// ═══════════════════════════════════════════════════════════════
+// BIKE24 SEO Tool — n8n Version
+// All API keys (Semrush + Claude) live in n8n.
+// This app sends CSV data + language selection to the n8n webhook
+// and receives processed results (SV + translations + metas) back.
+//
+// Expected n8n response format:
+// {
+//   "results": {
+//     "DE": [ { url, kw, sv0, nb1,sv1,nb2,sv2,nb3,sv3,nb4,sv4,nb5,sv5, title, titleLen, desc, descLen } ],
+//     "EN": [ ... ],
+//     ...
+//   }
+// }
+// ═══════════════════════════════════════════════════════════════
+
+const ALL_LANGS=['EN','ES','IT','NL','FR','FI','PL','DK','SI'];
 const HEADERS=['#','Current URL','Main KW','SV Main KW','Secondary KW1','SV KW1','Secondary KW2','SV KW2','Secondary KW3','SV KW3','Secondary KW4','SV KW4','Secondary KW5','SV KW5','Meta Title','Length','Meta Description','Length2'];
-const DOMAIN='bike24.com';
 let csvData=[],results={},selectedLangs=[...ALL_LANGS];
 
-function demoSV(kw){if(!kw)return'—';let h=0;for(let i=0;i<kw.length;i++)h=(h*31+kw.charCodeAt(i))&0xffffffff;const b=[140,210,320,480,720,1000,1300,1900,2400,3600,5400,8100,12000,18000,27000];return String(b[Math.abs(h)%b.length]);}
-function isDemoMode(){return!document.getElementById('devSemrush').value.trim();}
-
-// Comet
-let animFrame=null,particles=[],cometAngle=0,currentLang='DE';
+// ── Comet animation ──────────────────────────────────────────────
+let animFrame=null,particles=[],cometAngle=0;
 function startComet(){
   const cv=document.getElementById('procCanvas'),ctx=cv.getContext('2d');
   particles=[];cancelAnimationFrame(animFrame);
@@ -442,12 +456,12 @@ function startComet(){
     ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle='rgba(255,100,45,0.12)';ctx.lineWidth=1;ctx.stroke();
     for(let i=8;i>=0;i--){const a=cometAngle-i*0.18,px=cx+Math.cos(a)*r,py=cy+Math.sin(a)*r;ctx.beginPath();ctx.arc(px,py,3.5-i*0.3,0,Math.PI*2);ctx.fillStyle=`rgba(255,${100+i*5},45,${(1-i/9)*0.55})`;ctx.fill();}
     const hx=cx+Math.cos(cometAngle)*r,hy=cy+Math.sin(cometAngle)*r;
-    const g=ctx.createRadialGradient(hx,hy,0,hx,hy,8);g.addColorStop(0,'rgba(255,100,45,1)');g.addColorStop(0.5,'rgba(255,100,45,0.4)');g.addColorStop(1,'rgba(255,100,45,0)');
+    const g=ctx.createRadialGradient(hx,hy,0,hx,hy,8);g.addColorStop(0,'rgba(255,100,45,1)');g.addColorStop(.5,'rgba(255,100,45,.4)');g.addColorStop(1,'rgba(255,100,45,0)');
     ctx.beginPath();ctx.arc(hx,hy,8,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
     ctx.beginPath();ctx.arc(hx,hy,3.5,0,Math.PI*2);ctx.fillStyle='#FF642D';ctx.fill();
-    if(Math.random()<0.4)particles.push({x:hx,y:hy,vx:(Math.random()-.5)*1.8,vy:(Math.random()-.5)*1.8,life:1,col:Math.random()<.5?'255,100,45':'124,58,237'});
+    if(Math.random()<.4)particles.push({x:hx,y:hy,vx:(Math.random()-.5)*1.8,vy:(Math.random()-.5)*1.8,life:1,col:Math.random()<.5?'255,100,45':'124,58,237'});
     for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.life-=0.06;if(p.life<=0){particles.splice(i,1);continue;}ctx.beginPath();ctx.arc(p.x,p.y,2*p.life,0,Math.PI*2);ctx.fillStyle=`rgba(${p.col},${p.life})`;ctx.fill();}
-    const pulse=0.7+0.3*Math.sin(Date.now()*.004);
+    const pulse=.7+.3*Math.sin(Date.now()*.004);
     const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,12);cg.addColorStop(0,`rgba(0,114,232,${pulse*.9})`);cg.addColorStop(.6,`rgba(0,114,232,${pulse*.2})`);cg.addColorStop(1,'rgba(0,114,232,0)');
     ctx.beginPath();ctx.arc(cx,cy,12,0,Math.PI*2);ctx.fillStyle=cg;ctx.fill();
     ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fillStyle='#0072E8';ctx.fill();
@@ -455,26 +469,16 @@ function startComet(){
   }draw();
 }
 function stopComet(){cancelAnimationFrame(animFrame);animFrame=null;document.getElementById('procCanvas').getContext('2d').clearRect(0,0,90,90);}
-function setProcStep(step,kw){
-  for(let i=0;i<4;i++){const el=document.getElementById('pStep'+i);el.classList.remove('active','done');if(i<step)el.classList.add('done');else if(i===step)el.classList.add('active');}
-  const ln=LANGS_META[currentLang]?.langName||'German';
-  const subs=[`Fetching SV for "${kw}"…`,`Translating "${kw}" → ${ln}…`,`Building title for "${kw}"…`,`Generating description for "${kw}"…`];
-  const s=document.getElementById('pSub'+step);if(s&&kw)s.textContent=subs[step]||'';
-}
+function setProcStep(step){for(let i=0;i<4;i++){const el=document.getElementById('pStep'+i);el.classList.remove('active','done');if(i<step)el.classList.add('done');else if(i===step)el.classList.add('active');}}
 
+// ── Dev Config ───────────────────────────────────────────────────
 function toggleDev(){const p=document.getElementById('devPanel'),c=document.getElementById('devChevron');p.classList.toggle('open');c.classList.toggle('open',p.classList.contains('open'));}
 function toggleVis(id,btn){const el=document.getElementById(id);el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'👁':'🙈';}
-function onDevInput(el){el.classList.toggle('has-value',el.value.trim().length>5);updateDemoUI();}
-function updateDemoUI(){
-  const demo=isDemoMode();
-  document.getElementById('demoBanner').style.display=demo?'flex':'none';
-  document.getElementById('demoBadgeSV').style.display=demo?'inline':'none';
-  if(csvData.length>0&&selectedLangs.length>0)document.getElementById('demoModeHint').classList.toggle('show',demo);
-}
-function saveDevConfig(){const msg=document.getElementById('devSavedMsg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500);logLine('Config saved'+(isDemoMode()?' — Semrush: demo mode active':''),'ok');updateDemoUI();}
-function getSemKey(){return document.getElementById('devSemrush').value.trim();}
-function getClKey(){return document.getElementById('devClaude').value.trim();}
+function onDevInput(el){el.classList.toggle('has-value',el.value.trim().length>10);updateHint();}
+function saveDevConfig(){const msg=document.getElementById('devSavedMsg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500);logLine('Webhook URL saved to session','ok');}
+function getWebhook(){return document.getElementById('devWebhook').value.trim();}
 
+// ── Upload ────────────────────────────────────────────────────────
 const dz=document.getElementById('dropzone');
 dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
 dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
@@ -495,23 +499,25 @@ function parseXLSX(buf,fname){
   const wb=XLSX.read(buf,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
   if(raw.length<2)return showToast('XLSX appears to be empty');
   csvData=raw.slice(1).filter(r=>r[1]).map(r=>r.map(c=>String(c)));
-  showStats(fname,'xlsx',csvData.length,raw[0].length);logLine('▶ XLSX loaded: '+fname+' (tab: '+wb.SheetNames[0]+')','step');logLine('· '+csvData.length+' rows · '+raw[0].length+' columns','ok');
+  showStats(fname,'xlsx',csvData.length,raw[0].length);logLine('▶ XLSX loaded: '+fname,'step');logLine('· '+csvData.length+' rows · '+raw[0].length+' columns','ok');
 }
 function showStats(fname,type,rows,cols){
   const short=fname.length>30?fname.slice(0,28)+'…':fname;
   document.getElementById('fsName').textContent=short;document.getElementById('fsRows').textContent=rows;document.getElementById('fsCols').textContent=cols;
   const ft=document.getElementById('fsType');ft.textContent=type.toUpperCase();ft.className='fs-type '+type;
   document.getElementById('fileStats').classList.add('visible');document.getElementById('headerBadge').textContent=rows+' rows · '+cols+' cols';
-  buildPreview();document.getElementById('previewWrap').style.display='block';updateHint();setLogState('running');updateDemoUI();
+  buildPreview();document.getElementById('previewWrap').style.display='block';updateHint();setLogState('running');
 }
 function clearFile(){csvData=[];document.getElementById('fileInput').value='';document.getElementById('fileStats').classList.remove('visible');document.getElementById('previewWrap').style.display='none';document.getElementById('headerBadge').textContent='No file';updateHint();}
 function buildPreview(){
   const cols=[{l:'#',i:0},{l:'URL',i:1},{l:'Main KW',i:2},{l:'SV',i:3},{l:'Meta Title',i:14}];
   let h='<thead><tr>'+cols.map(c=>`<th>${c.l}</th>`).join('')+'</tr></thead><tbody>';
-  csvData.slice(0,5).forEach(row=>{h+='<tr>'+cols.map(c=>{const v=row[c.i]||'';const cls=c.l==='URL'?' class="col-url"':'';return `<td${cls} title="${v}">${v.length>28?v.slice(0,28)+'…':v}</td>`;}).join('')+'</tr>';});
-  if(csvData.length>5)h+=`<tr><td colspan="5" style="text-align:center;color:var(--gray500);font-style:italic;font-size:10px;padding:6px">… and ${csvData.length-5} more rows</td></tr>`;
+  csvData.slice(0,5).forEach(row=>{h+='<tr>'+cols.map(c=>{const v=row[c.i]||'';const cls=c.l==='URL'?' class="col-url"':'';return`<td${cls} title="${v}">${v.length>28?v.slice(0,28)+'…':v}</td>`;}).join('')+'</tr>';});
+  if(csvData.length>5)h+=`<tr><td colspan="5" style="text-align:center;color:#506688;font-style:italic;font-size:10px;padding:6px">… and ${csvData.length-5} more rows</td></tr>`;
   document.getElementById('previewTable').innerHTML=h+'</tbody>';
 }
+
+// ── Language Pills ────────────────────────────────────────────────
 function toggleLang(code){
   if(code==='ALL'){const allOn=selectedLangs.length===ALL_LANGS.length;if(allOn){selectedLangs=[];ALL_LANGS.forEach(l=>document.getElementById('pill_'+l).classList.remove('selected'));}else{selectedLangs=[...ALL_LANGS];ALL_LANGS.forEach(l=>document.getElementById('pill_'+l).classList.add('selected'));}document.getElementById('pill_ALL').classList.toggle('selected',selectedLangs.length===ALL_LANGS.length);}
   else{const p=document.getElementById('pill_'+code),i=selectedLangs.indexOf(code);if(i>=0){selectedLangs.splice(i,1);p.classList.remove('selected');}else{selectedLangs.push(code);p.classList.add('selected');}document.getElementById('pill_ALL').classList.toggle('selected',selectedLangs.length===ALL_LANGS.length);}
@@ -519,99 +525,192 @@ function toggleLang(code){
   updateHint();
 }
 function updateHint(){
-  const hasCsv=csvData.length>0,hasL=selectedLangs.length>0;
+  const hasCsv=csvData.length>0,hasL=selectedLangs.length>0,hasWh=getWebhook().length>10;
   const btn=document.getElementById('startBtn'),hint=document.getElementById('startHint');
-  if(!hasCsv){hint.textContent='Upload a file to get started';btn.disabled=true;document.getElementById('demoModeHint').classList.remove('show');return;}
+  if(!hasCsv){hint.textContent='Upload a file to get started';btn.disabled=true;return;}
   if(!hasL){hint.textContent='Select at least one language';btn.disabled=true;return;}
-  hint.textContent=csvData.length+' rows · DE + '+selectedLangs.length+' language'+(selectedLangs.length>1?'s':'')+' · '+(selectedLangs.length+1)+' tabs in output';
-  btn.disabled=false;updateDemoUI();
+  if(!hasWh){hint.textContent='Enter webhook URL in Developer Config';btn.disabled=true;return;}
+  hint.textContent=csvData.length+' rows · DE + '+selectedLangs.length+' language'+(selectedLangs.length>1?'s':'')+' · sending to n8n';
+  btn.disabled=false;
 }
-function logLine(msg,type='info'){const body=document.getElementById('logBody');const ph=body.querySelector('.log-ph');if(ph)ph.remove();const t=new Date().toTimeString().slice(0,8);const icons={info:'·',ok:'✓',warn:'⚠',error:'✕',step:'▶',demo:'◈'};const div=document.createElement('div');div.className='log-line '+type;div.innerHTML=`<span class="log-time">${t}</span><span class="log-icon">${icons[type]||'·'}</span><span class="log-msg">${msg}</span>`;body.appendChild(div);body.scrollTop=body.scrollHeight;}
-function setLogState(s){document.getElementById('logDot').className='log-dot '+s;const el=document.getElementById('logStatus');el.className='log-status '+s;el.textContent={idle:'Idle',running:'Running…',done:'Completed',error:'Error'}[s]||s;}
 
+// ── Log ───────────────────────────────────────────────────────────
+function logLine(msg,type='info'){
+  const body=document.getElementById('logBody');const ph=body.querySelector('.log-ph');if(ph)ph.remove();
+  const t=new Date().toTimeString().slice(0,8);const icons={info:'·',ok:'✓',warn:'⚠',error:'✕',step:'▶'};
+  const div=document.createElement('div');div.className='log-line '+type;
+  div.innerHTML=`<span class="log-time">${t}</span><span class="log-icon">${icons[type]||'·'}</span><span class="log-msg">${msg}</span>`;
+  body.appendChild(div);body.scrollTop=body.scrollHeight;
+}
+function setLogState(s){
+  document.getElementById('logDot').className='log-dot '+s;
+  const el=document.getElementById('logStatus');el.className='log-status '+s;
+  el.textContent={idle:'Idle',running:'Running…',done:'Completed',error:'Error'}[s]||s;
+}
+
+// ── Generation — sends to n8n webhook ─────────────────────────────
 function startGeneration(){
-  const allTabs=['DE',...selectedLangs];results={};
+  const allTabs=['DE',...selectedLangs];
   document.getElementById('genPills').innerHTML=allTabs.map(l=>`<div class="gp" id="gp_${l}">${l}</div>`).join('');
-  document.getElementById('runWrap').style.display='block';document.getElementById('resultCard').classList.add('hidden');
+  document.getElementById('runWrap').style.display='block';
+  document.getElementById('resultCard').classList.add('hidden');
   document.getElementById('dlXlsxBtn').disabled=true;document.getElementById('dlCsvBtn').disabled=true;
   document.getElementById('dlMeta').textContent='Generation in progress…';document.getElementById('dlBadge').textContent='';
   document.getElementById('procCard').classList.add('active');startComet();setLogState('running');
-  const demo=isDemoMode();
-  logLine('','info');logLine('▶ Generation started'+(demo?' · Demo mode (Semrush simulated)':''),'step');
-  if(demo)logLine('◈ No Semrush key — search volumes will be simulated','demo');
-  logLine('· Tabs: DE → '+selectedLangs.join(' → '),'info');
-  runGeneration(getSemKey(),getClKey(),allTabs,demo);
-}
-function setProgress(done,total,label){const pct=total?Math.round(done/total*100):0;document.getElementById('progFill').style.width=pct+'%';document.getElementById('progPct').textContent=pct+'%';document.getElementById('progLabel').textContent=label;document.getElementById('progBadge').textContent=done+' / '+total;}
 
-async function runGeneration(semKey,clKey,allTabs,demo){
-  const total=allTabs.length*csvData.length;let done=0;
-  for(const lang of allTabs){
-    currentLang=lang;const gp=document.getElementById('gp_'+lang);if(gp)gp.className='gp gp-active';
-    const isDE=lang==='DE',langMeta=isDE?{db:'de',langName:'German'}:LANGS_META[lang];
-    logLine('','info');logLine('▶ ['+lang+'] '+langMeta.langName+' · '+csvData.length+' rows','step');
-    results[lang]=[];
-    for(const row of csvData){
-      const url=row[1]||'',kwDE=(row[2]||'').trim(),nb1DE=(row[4]||'').trim();
-      let kw=kwDE,nb1=nb1DE,nebenKws=[row[4],row[6],row[8],row[10],row[12]].map(k=>(k||'').trim());
-      let svs=[];
-      setProcStep(0,kwDE);
-      const kwsFetch=[kwDE,...nebenKws.filter(Boolean)];
-      if(semKey){for(const k of kwsFetch){try{svs.push(await fetchSV(semKey,k,langMeta.db));logLine('· ['+lang+'] SV "'+k+'": '+svs[svs.length-1],'ok');}catch(e){svs.push('—');}}}
-      else{await new Promise(r=>setTimeout(r,100));for(const k of kwsFetch){const sv=demoSV(k);svs.push(sv);logLine('· ['+lang+'] SV "'+k+'": '+sv+' ◈ simulated','demo');}}
-      setProcStep(1,kwDE);
-      if(!isDE&&clKey){try{const tr=await translateKws(clKey,kwDE,nebenKws.filter(Boolean),langMeta.langName);kw=tr.main||kwDE;nb1=tr.neben1||nb1DE;nebenKws=[tr.neben1,tr.neben2,tr.neben3,tr.neben4,tr.neben5].map(k=>k||'');logLine('· ['+lang+'] "'+kwDE+'" → "'+kw+'"','ok');}catch(e){logLine('⚠ ['+lang+'] Translation failed','warn');}}
-      else if(!isDE&&!clKey){await new Promise(r=>setTimeout(r,60));logLine('· ['+lang+'] No Claude key — keeping DE keyword','warn');}
-      setProcStep(2,kwDE);
-      const title=buildTitle(kw,lang);logLine('· ['+lang+'] Title ('+title.length+' chars): '+title,'ok');
-      setProcStep(3,kwDE);
-      let desc=isDE?(row[16]||''):'';
-      if(clKey){try{desc=await genDesc(clKey,kw,nb1,langMeta.langName,lang);logLine('· ['+lang+'] Desc ('+desc.length+' chars) ✓','ok');}catch(e){logLine('⚠ ['+lang+'] Description failed','warn');}}
-      else if(!clKey&&!isDE){await new Promise(r=>setTimeout(r,60));desc='[No Claude key — meta description placeholder]';logLine('· ['+lang+'] No Claude key — placeholder inserted','warn');}
-      results[lang].push({rowNum:row[0]||'',url,kw,sv0:svs[0]||'—',nb1:nebenKws[0]||'',sv1:svs[1]||'—',nb2:nebenKws[1]||'',sv2:svs[2]||'—',nb3:nebenKws[2]||'',sv3:svs[3]||'—',nb4:nebenKws[3]||'',sv4:svs[4]||'—',nb5:nebenKws[4]||'',sv5:svs[5]||'—',title,titleLen:title.length,desc,descLen:desc.length});
-      done++;setProgress(done,total,lang+': "'+kwDE+'"');
+  logLine('','info');logLine('▶ Sending data to n8n webhook…','step');
+  logLine('· Rows: '+csvData.length+' · Languages: DE + '+selectedLangs.join(', '),'info');
+
+  // Progress simulation while waiting for n8n
+  let step=0;
+  const steps=['Sending CSV data to n8n…','n8n: fetching Semrush volumes…','n8n: Claude translating & generating…','n8n: compiling output…'];
+  const stepInterval=setInterval(()=>{
+    if(step<4){setProcStep(step);document.getElementById('progLabel').textContent=steps[step]||'Processing…';document.getElementById('progFill').style.width=(step*25)+'%';document.getElementById('progPct').textContent=(step*25)+'%';step++;}
+  },2000);
+
+  // Send to n8n
+  sendToN8n(allTabs,stepInterval);
+}
+
+async function sendToN8n(allTabs,stepInterval){
+  const webhook=getWebhook();
+
+  // Build payload: all rows + selected languages
+  const payload={
+    languages:allTabs,
+    rows:csvData.map((row,i)=>({
+      index:i,
+      rowNum:row[0]||String(i+1),
+      url:row[1]||'',
+      hauptKw:row[2]||'',
+      svHaupt:row[3]||'',
+      nebenKw1:row[4]||'',sv1:row[5]||'',
+      nebenKw2:row[6]||'',sv2:row[7]||'',
+      nebenKw3:row[8]||'',sv3:row[9]||'',
+      nebenKw4:row[10]||'',sv4:row[11]||'',
+      nebenKw5:row[12]||'',sv5:row[13]||'',
+      metaTitle:row[14]||'',
+      metaDesc:row[16]||''
+    }))
+  };
+
+  logLine('· Payload: '+csvData.length+' rows · '+allTabs.length+' language tabs','info');
+
+  try{
+    const response=await fetch(webhook,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+
+    clearInterval(stepInterval);
+    setProcStep(3);document.getElementById('progFill').style.width='90%';document.getElementById('progPct').textContent='90%';
+
+    if(!response.ok)throw new Error('n8n responded with status '+response.status);
+
+    const data=await response.json();
+    logLine('· n8n response received','ok');
+
+    // Process response
+    // n8n should return: { results: { DE: [...], EN: [...], ... } }
+    if(data.results){
+      results=data.results;
+      logLine('✓ Results received from n8n','ok');
+    } else if(Array.isArray(data)){
+      // Fallback: flat array for single language
+      results={DE:data};
+      logLine('· Single language response — assigned to DE','info');
+    } else {
+      // Try to use raw data
+      results=data;
+      logLine('· Response structure used as-is','info');
     }
-    if(gp)gp.className='gp gp-done';logLine('✓ ['+lang+'] '+csvData.length+' rows done','ok');
+
+    document.getElementById('progFill').style.width='100%';document.getElementById('progPct').textContent='100%';
+    // Mark all tabs done
+    allTabs.forEach(l=>{const gp=document.getElementById('gp_'+l);if(gp)gp.className='gp gp-done';});
+
+    stopComet();document.getElementById('procCard').classList.remove('active');
+    setLogState('done');logLine('','info');logLine('✓ Generation complete — ready for download','ok');
+    finish(allTabs);
+
+  }catch(err){
+    clearInterval(stepInterval);
+    stopComet();document.getElementById('procCard').classList.remove('active');
+    allTabs.forEach(l=>{const gp=document.getElementById('gp_'+l);if(gp)gp.className='gp gp-error';});
+    setLogState('error');
+    logLine('✕ n8n request failed: '+err.message,'error');
+    logLine('· Check webhook URL and n8n workflow status','warn');
+    showToast('❌ n8n connection failed');
   }
-  stopComet();document.getElementById('procCard').classList.remove('active');
-  setLogState('done');logLine('','info');logLine('✓ Generation complete'+(demo?' (volumes simulated)':''),'ok');
-  finish(allTabs);
 }
 
-function buildTitle(kw,lang){const l=kw.length,s=SLUG_MAP[lang]||SLUG_MAP.DE;let slug;if(l<=10)slug=s.s;else if(l<=15)slug=s.m;else if(l<=18){const c=cap(kw)+' '+s.m+' | '+DOMAIN;slug=c.length<=60?s.m:s.c;}else slug=s.c;return cap(kw)+' '+slug+' | '+DOMAIN;}
-function cap(s){return s?s[0].toUpperCase()+s.slice(1):'';}
-async function translateKws(ak,kw,nbs,ln){const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':ak,'anthropic-version':'2023-06-01','content-type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,messages:[{role:'user',content:`Translate these cycling keywords to ${ln}. Return ONLY JSON:\n{"main":"...","neben1":"...","neben2":"...","neben3":"...","neben4":"...","neben5":"..."}\nMain: ${kw}\nSecondary: ${nbs.join(', ')}`}]})});return JSON.parse((await r.json()).content[0].text.replace(/```json|```/g,'').trim());}
-async function fetchSV(ak,kw,db){if(!kw)return'—';const r=await fetch(`https://api.semrush.com/?type=phrase_this&key=${ak}&phrase=${encodeURIComponent(kw)}&database=${db}&export_columns=Ph,Nq`);const lines=(await r.text()).trim().split('\n');return lines.length<2?'—':lines[1].split(';')[1]||'—';}
-async function genDesc(ak,kw,nb,ln,lang){const conn={DE:'bei',EN:'at',ES:'en',IT:'su',NL:'bij',FR:'chez',FI:'BIKE24:stä',PL:'w',DK:'hos',SI:'pri'}[lang]||'bei';const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':ak,'anthropic-version':'2023-06-01','content-type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,messages:[{role:'user',content:`Write a meta description in ${ln} for BIKE24.\nMain keyword: ${kw}\nSecondary: ${nb||''}\nTemplate: [KW] ${conn} BIKE24 ► [phrase] ✓ [USP1] ✓ [USP2] ✓ [USP3] ➤ [CTA!]\nRules: 120–160 characters. Output ONLY the text.`}]})});return((await r.json()).content?.[0]?.text||'').trim();}
-
+// ── Results ───────────────────────────────────────────────────────
 function finish(allTabs){
-  const n=allTabs.length;document.getElementById('doneBadge').textContent=n+' tabs · '+csvData.length+' rows';
+  const n=allTabs.length;
+  document.getElementById('doneBadge').textContent=n+' tabs ready';
   document.getElementById('dlBadge').textContent=n+' tabs';
   document.getElementById('dlMeta').textContent=n+' tabs · '+csvData.length+' rows each · columns A–R';
-  const rt=document.getElementById('resultTabs');rt.innerHTML=allTabs.map((l,i)=>`<div class="rlt done-tab${i===0?' active':''}" onclick="showResult('${l}')">${l}</div>`).join('');
+  const rt=document.getElementById('resultTabs');
+  rt.innerHTML=allTabs.map((l,i)=>`<div class="rlt done-tab${i===0?' active':''}" onclick="showResult('${l}')">${l}</div>`).join('');
   showResult(allTabs[0]);document.getElementById('resultCard').classList.remove('hidden');
   document.getElementById('dlXlsxBtn').disabled=false;document.getElementById('dlCsvBtn').disabled=false;
-  showToast('✅ '+n+' tabs ready!');
+  showToast('✅ '+n+' tabs ready for download!');
 }
+
 function showResult(lang){
   document.querySelectorAll('#resultTabs .rlt').forEach(t=>t.classList.remove('active'));
   const el=[...document.querySelectorAll('#resultTabs .rlt')].find(t=>t.textContent===lang);if(el)el.classList.add('active');
   const data=results[lang]||[];
   let h='<thead><tr><th>URL</th><th>Main KW</th><th>SV</th><th>Meta Title</th><th>L</th><th>Description</th><th>L</th></tr></thead><tbody>';
-  data.slice(0,5).forEach(r=>{const tc=r.titleLen>=50&&r.titleLen<=60?'var(--green)':'var(--red)';const dc=r.descLen>=120&&r.descLen<=160?'var(--green)':'var(--red)';h+=`<tr><td class="col-url" title="${r.url}">${r.url.split('/').slice(-1)[0]||r.url}</td><td>${r.kw}</td><td>${r.sv0}</td><td title="${r.title}">${r.titleLen>=50&&r.titleLen<=60?'✅':'⚠'} ${r.title.length>24?r.title.slice(0,24)+'…':r.title}</td><td style="font-weight:700;color:${tc}">${r.titleLen}</td><td title="${r.desc}">${r.descLen>=120&&r.descLen<=160?'✅':'⚠'} ${r.desc.length>30?r.desc.slice(0,30)+'…':r.desc}</td><td style="font-weight:700;color:${dc}">${r.descLen}</td></tr>`;});
-  if(data.length>5)h+=`<tr><td colspan="7" style="text-align:center;color:var(--gray500);font-style:italic;font-size:10px;padding:6px">… and ${data.length-5} more rows</td></tr>`;
+  data.slice(0,5).forEach(r=>{
+    const tl=r.titleLen||r.title?.length||0,dl=r.descLen||r.desc?.length||0;
+    const tc=tl>=50&&tl<=60?'var(--green)':'var(--red)';const dc=dl>=120&&dl<=160?'var(--green)':'var(--red)';
+    const title=r.title||r.metaTitle||'';const desc=r.desc||r.metaDesc||'';
+    h+=`<tr><td class="col-url" title="${r.url}">${(r.url||'').split('/').slice(-1)[0]||r.url}</td><td>${r.kw||r.hauptKw||''}</td><td>${r.sv0||r.svHaupt||'—'}</td><td title="${title}">${tl>=50&&tl<=60?'✅':'⚠'} ${title.length>24?title.slice(0,24)+'…':title}</td><td style="font-weight:700;color:${tc}">${tl}</td><td title="${desc}">${dl>=120&&dl<=160?'✅':'⚠'} ${desc.length>30?desc.slice(0,30)+'…':desc}</td><td style="font-weight:700;color:${dc}">${dl}</td></tr>`;
+  });
+  if(data.length>5)h+=`<tr><td colspan="7" style="text-align:center;color:#506688;font-style:italic;font-size:10px;padding:6px">… and ${data.length-5} more rows</td></tr>`;
   document.getElementById('resultTable').innerHTML=h+'</tbody>';
+}
+
+// ── Download ──────────────────────────────────────────────────────
+function getRow(r,i){
+  return[
+    r.rowNum||(i+1), r.url||'',
+    r.kw||r.hauptKw||'', r.sv0||r.svHaupt||'—',
+    r.nb1||r.nebenKw1||'', r.sv1||'—',
+    r.nb2||r.nebenKw2||'', r.sv2||'—',
+    r.nb3||r.nebenKw3||'', r.sv3||'—',
+    r.nb4||r.nebenKw4||'', r.sv4||'—',
+    r.nb5||r.nebenKw5||'', r.sv5||'—',
+    r.title||r.metaTitle||'', r.titleLen||r.title?.length||0,
+    r.desc||r.metaDesc||'', r.descLen||r.desc?.length||0
+  ];
 }
 function downloadXLSX(){
   const wb=XLSX.utils.book_new(),allTabs=['DE',...selectedLangs],date=new Date().toISOString().slice(0,10);
-  allTabs.forEach(lang=>{const data=results[lang]||[],wsData=[HEADERS];data.forEach((r,i)=>{wsData.push([r.rowNum||(i+1),r.url,r.kw,r.sv0,r.nb1,r.sv1,r.nb2,r.sv2,r.nb3,r.sv3,r.nb4,r.sv4,r.nb5,r.sv5,r.title,r.titleLen,r.desc,r.descLen]);});const ws=XLSX.utils.aoa_to_sheet(wsData);ws['!cols']=[{wch:5},{wch:55},{wch:22},{wch:14},{wch:22},{wch:14},{wch:22},{wch:14},{wch:22},{wch:14},{wch:22},{wch:14},{wch:22},{wch:14},{wch:55},{wch:8},{wch:120},{wch:8}];XLSX.utils.book_append_sheet(wb,ws,lang);});
-  const fname=`BIKE24_SEO_${date}_${allTabs.length}Tabs${isDemoMode()?'_DEMO':''}.xlsx`;XLSX.writeFile(wb,fname);logLine('⬇ XLSX: '+fname,'ok');showToast('⬇ '+fname);
+  allTabs.forEach(lang=>{
+    const data=results[lang]||[],wsData=[HEADERS];
+    data.forEach((r,i)=>wsData.push(getRow(r,i)));
+    const ws=XLSX.utils.aoa_to_sheet(wsData);
+    ws['!cols']=[{wch:5},{wch:55},{wch:22},{wch:14},{wch:22},{wch:14},{wch:22},{wch:14},{wch:22},{wch:14},{wch:22},{wch:14},{wch:22},{wch:14},{wch:55},{wch:8},{wch:120},{wch:8}];
+    XLSX.utils.book_append_sheet(wb,ws,lang);
+  });
+  const fname=`BIKE24_SEO_${date}_${allTabs.length}Tabs.xlsx`;XLSX.writeFile(wb,fname);
+  logLine('⬇ XLSX: '+fname,'ok');showToast('⬇ '+fname);
 }
 function downloadCSVs(){
   const allTabs=['DE',...selectedLangs],date=new Date().toISOString().slice(0,10);
-  allTabs.forEach(lang=>{const data=results[lang]||[];let csv=HEADERS.join(',')+'\n';data.forEach((r,i)=>{const row=[r.rowNum||(i+1),r.url,r.kw,r.sv0,r.nb1,r.sv1,r.nb2,r.sv2,r.nb3,r.sv3,r.nb4,r.sv4,r.nb5,r.sv5,r.title,r.titleLen,r.desc,r.descLen];csv+=row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')+'\n';});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));a.download=`BIKE24_SEO_${lang}_${date}${isDemoMode()?'_DEMO':''}.csv`;a.click();});
+  allTabs.forEach(lang=>{
+    const data=results[lang]||[];let csv=HEADERS.join(',')+'\n';
+    data.forEach((r,i)=>{csv+=getRow(r,i).map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')+'\n';});
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));a.download=`BIKE24_SEO_${lang}_${date}.csv`;a.click();
+  });
   logLine('⬇ CSV: '+allTabs.length+' files downloaded','ok');showToast('⬇ '+allTabs.length+' CSV files');
 }
+
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',4000);}
-updateDemoUI();
+updateHint();
 </script>
+</body>
+</html>
