@@ -489,13 +489,19 @@ function parseCSV(text,fname){
   showStats(fname,'csv',csvData.length,headers.length);logLine('▶ CSV loaded: '+fname,'step');logLine('· '+csvData.length+' rows · '+headers.length+' columns','ok');
 }
 function parseXLSX(buf,fname){
-  const wb=XLSX.read(buf,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  const wb=XLSX.read(buf,{type:'array'});
+  const ws=wb.Sheets[wb.SheetNames[0]];
+  // blankrows:false skips rows SheetJS considers entirely blank
+  const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',blankrows:false});
   if(raw.length<2)return showToast('XLSX appears to be empty');
-  // Filter out truly empty rows — check that the URL column (index 1) contains a non-empty, non-whitespace string
+  const headers=raw[0];
   csvData=raw.slice(1)
-    .filter(r=>r[1]!==undefined && String(r[1]).trim().length>0)
-    .map(r=>r.map(c=>String(c)));
-  showStats(fname,'xlsx',csvData.length,raw[0].length);logLine('▶ XLSX loaded: '+fname,'step');logLine('· '+csvData.length+' rows · '+raw[0].length+' columns','ok');
+    // Keep only rows where at least 2 of the first 5 cells have real content
+    .filter(r=>r.slice(0,5).filter(c=>c!==null&&c!==undefined&&String(c).trim()!=='').length>=2)
+    .map(r=>r.map(c=>(c===null||c===undefined)?'':String(c)));
+  showStats(fname,'xlsx',csvData.length,headers.length);
+  logLine('▶ XLSX loaded: '+fname,'step');
+  logLine('· '+csvData.length+' rows · '+headers.length+' columns','ok');
 }
 function showStats(fname,type,rows,cols){
   const short=fname.length>30?fname.slice(0,28)+'…':fname;
