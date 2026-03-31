@@ -490,17 +490,30 @@ function parseCSV(text,fname){
 }
 function parseXLSX(buf,fname){
   const wb=XLSX.read(buf,{type:'array'});
-  const ws=wb.Sheets[wb.SheetNames[0]];
-  // blankrows:false skips rows SheetJS considers entirely blank
+  // Find the right sheet: prefer "DE", otherwise take the sheet with the most columns (>=10)
+  let sheetName = wb.SheetNames[0];
+  if(wb.SheetNames.includes('DE')) {
+    sheetName = 'DE';
+  } else {
+    // Pick sheet with most columns as fallback
+    let maxCols = 0;
+    for(const name of wb.SheetNames){
+      const ws = wb.Sheets[name];
+      const r = XLSX.utils.sheet_to_json(ws,{header:1,defval:'',blankrows:false});
+      const cols = r[0]?r[0].length:0;
+      if(cols > maxCols){ maxCols=cols; sheetName=name; }
+    }
+  }
+  logLine('· Using sheet: '+sheetName,'info');
+  const ws=wb.Sheets[sheetName];
   const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',blankrows:false});
   if(raw.length<2)return showToast('XLSX appears to be empty');
   const headers=raw[0];
   csvData=raw.slice(1)
-    // Keep only rows where at least 2 of the first 5 cells have real content
     .filter(r=>r.slice(0,5).filter(c=>c!==null&&c!==undefined&&String(c).trim()!=='').length>=2)
     .map(r=>r.map(c=>(c===null||c===undefined)?'':String(c)));
   showStats(fname,'xlsx',csvData.length,headers.length);
-  logLine('▶ XLSX loaded: '+fname,'step');
+  logLine('▶ XLSX loaded: '+fname+' · tab: '+sheetName,'step');
   logLine('· '+csvData.length+' rows · '+headers.length+' columns','ok');
 }
 function showStats(fname,type,rows,cols){
@@ -512,24 +525,25 @@ function showStats(fname,type,rows,cols){
 }
 function clearFile(){csvData=[];document.getElementById('fileInput').value='';document.getElementById('fileStats').classList.remove('visible');document.getElementById('previewWrap').style.display='none';document.getElementById('headerBadge').textContent='No file';updateHint();}
 function buildPreview(){
-  // Columns: A=#(0), B=URL(1), C=Main KW(2), D=SV(3), O=Meta Title(14)
-  // URL: show only the last segment e.g. /falt-klappraeder
-  // SV: integer only — strip decimals
-  // Meta Title: col index 14 (column O)
-  let h='<thead><tr><th>#</th><th>URL</th><th>Main KW</th><th>SV</th><th>Meta Title</th></tr></thead><tbody>';
+  // A(0)=#  B(1)=URL  C(2)=Haupt-KW  D(3)=SV  O(14)=Meta Title
+  let h='<thead><tr><th>#</th><th>URL</th><th>Haupt-KW</th><th>SV</th><th>Meta Title</th></tr></thead><tbody>';
   csvData.slice(0,5).forEach(row=>{
-    const num   = row[0]||'';
-    const url   = (row[1]||'').split('/').filter(Boolean).pop()||row[1]||'';
-    const kw    = row[2]||'';
-    const sv    = row[3]?String(row[3]).split('.')[0].split(',')[0]:'';
-    const title = row[14]||'';
-    const urlFull = row[1]||'';
+    const num     = row[0]||'';
+    const fullUrl = row[1]||'';
+    // Show only last URL segment: /falt-klappraeder
+    const urlSlug = '/'+( fullUrl.replace(/\/+$/,'').split('/').pop()||fullUrl );
+    const kw      = row[2]||'';
+    // SV is col D (index 3) — integer only, no decimals
+    const svRaw   = row[3]||'';
+    const sv      = svRaw ? String(svRaw).split('.')[0].replace(/[^0-9]/g,'') : '';
+    // Meta Title is col O (index 14)
+    const title   = row[14]||'';
     h+=`<tr>
-      <td>${num}</td>
-      <td class="col-url" title="${urlFull}">/${url}</td>
-      <td>${kw.length>22?kw.slice(0,22)+'…':kw}</td>
+      <td style="color:var(--gray500)">${num}</td>
+      <td class="col-url" title="${fullUrl}">${urlSlug.length>32?urlSlug.slice(0,32)+'…':urlSlug}</td>
+      <td>${kw.length>20?kw.slice(0,20)+'…':kw}</td>
       <td>${sv}</td>
-      <td title="${title}">${title.length>28?title.slice(0,28)+'…':title}</td>
+      <td title="${title}">${title.length>30?title.slice(0,30)+'…':title}</td>
     </tr>`;
   });
   if(csvData.length>5)h+=`<tr><td colspan="5" style="text-align:center;color:#506688;font-style:italic;font-size:10px;padding:6px">… and ${csvData.length-5} more rows</td></tr>`;
