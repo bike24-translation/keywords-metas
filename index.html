@@ -512,9 +512,26 @@ function showStats(fname,type,rows,cols){
 }
 function clearFile(){csvData=[];document.getElementById('fileInput').value='';document.getElementById('fileStats').classList.remove('visible');document.getElementById('previewWrap').style.display='none';document.getElementById('headerBadge').textContent='No file';updateHint();}
 function buildPreview(){
-  const cols=[{l:'#',i:0},{l:'URL',i:1},{l:'Main KW',i:2},{l:'SV',i:3},{l:'Meta Title',i:14}];
-  let h='<thead><tr>'+cols.map(c=>`<th>${c.l}</th>`).join('')+'</tr></thead><tbody>';
-  csvData.slice(0,5).forEach(row=>{h+='<tr>'+cols.map(c=>{const v=row[c.i]||'';const cls=c.l==='URL'?' class="col-url"':'';return`<td${cls} title="${v}">${v.length>28?v.slice(0,28)+'…':v}</td>`;}).join('')+'</tr>';});
+  // Columns: A=#(0), B=URL(1), C=Main KW(2), D=SV(3), O=Meta Title(14)
+  // URL: show only the last segment e.g. /falt-klappraeder
+  // SV: integer only — strip decimals
+  // Meta Title: col index 14 (column O)
+  let h='<thead><tr><th>#</th><th>URL</th><th>Main KW</th><th>SV</th><th>Meta Title</th></tr></thead><tbody>';
+  csvData.slice(0,5).forEach(row=>{
+    const num   = row[0]||'';
+    const url   = (row[1]||'').split('/').filter(Boolean).pop()||row[1]||'';
+    const kw    = row[2]||'';
+    const sv    = row[3]?String(row[3]).split('.')[0].split(',')[0]:'';
+    const title = row[14]||'';
+    const urlFull = row[1]||'';
+    h+=`<tr>
+      <td>${num}</td>
+      <td class="col-url" title="${urlFull}">/${url}</td>
+      <td>${kw.length>22?kw.slice(0,22)+'…':kw}</td>
+      <td>${sv}</td>
+      <td title="${title}">${title.length>28?title.slice(0,28)+'…':title}</td>
+    </tr>`;
+  });
   if(csvData.length>5)h+=`<tr><td colspan="5" style="text-align:center;color:#506688;font-style:italic;font-size:10px;padding:6px">… and ${csvData.length-5} more rows</td></tr>`;
   document.getElementById('previewTable').innerHTML=h+'</tbody>';
 }
