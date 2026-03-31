@@ -1,0 +1,617 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@700;800;900&family=Inter:wght@400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0072E8;--yellow:#FFD105;--dark:#181B21;
+  --blue600:#004370;--blue500:#0654C4;--blue300:#BFE0F5;--blue100:#E8F4FF;
+  --red:#E00038;--green:#168749;--orange:#FF642D;--purple:#7C3AED;
+  --gray600:#252936;--gray500:#506688;--gray100:#F1F5F9;
+  --radius:10px;--shadow:0 4px 24px rgba(0,114,232,0.09);
+}
+body{font-family:'Inter',sans-serif;font-weight:500;background:var(--gray100);color:var(--dark)}
+
+.topbar{background:var(--dark);padding:0 32px;height:80px;display:flex;align-items:center;gap:20px;border-bottom:3px solid var(--blue)}
+.topbar-logo svg{height:56px;width:auto;display:block;flex-shrink:0}
+.topbar-pipe{width:1px;height:36px;background:rgba(255,255,255,.15);flex-shrink:0}
+.topbar-title{font-family:'Barlow',sans-serif;font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#fff}
+.topbar-title span{color:var(--blue300)}
+
+.page-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1060px;margin:0 auto;padding:24px 28px 0;align-items:start}
+.col{display:flex;flex-direction:column;gap:16px}
+
+.card{background:#fff;border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.card-header{padding:10px 18px;display:flex;align-items:center;gap:9px}
+.card-header.navy  {background:var(--dark)}
+.card-header.cobalt{background:var(--blue600)}
+.card-header.slate {background:var(--gray600)}
+.card-header.devhd {background:#0d1117;cursor:pointer}
+.card-header h2{font-family:'Barlow',sans-serif;font-weight:800;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#fff;flex:1}
+.card-header.devhd h2{color:var(--gray500)}
+.card-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+
+.dev-panel{background:#0d1117;max-height:0;overflow:hidden;transition:max-height .3s ease}
+.dev-panel.open{max-height:500px}
+.dev-inner{padding:14px 18px;display:flex;flex-direction:column;gap:11px;border-top:1px solid #21262d}
+.dev-field{display:flex;flex-direction:column;gap:4px}
+.dev-label{font-family:'Barlow',sans-serif;font-weight:800;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray500);display:flex;align-items:center;gap:6px}
+.dev-optional{font-size:9px;color:#3d5a73;font-weight:500;letter-spacing:0;text-transform:none;font-style:italic}
+.dev-input-wrap{position:relative}
+.dev-input{font-family:'Inter',sans-serif;font-weight:500;font-size:11px;color:#c9d1d9;background:#161b22;border:2px solid #30363d;border-radius:var(--radius);padding:7px 36px 7px 10px;width:100%;outline:none;transition:border-color .2s}
+.dev-input:focus{border-color:var(--blue)}
+.dev-input.has-value{border-color:#4ade80}
+.eye-btn{position:absolute;right:9px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:13px;color:var(--gray500);padding:0;line-height:1}
+.dev-save-row{display:flex;gap:8px;align-items:center}
+.btn-devsave{font-family:'Barlow',sans-serif;font-weight:900;font-size:9px;letter-spacing:.1em;text-transform:uppercase;background:var(--blue);color:#fff;border:none;border-radius:7px;padding:8px 14px;cursor:pointer;transition:background .2s}
+.btn-devsave:hover{background:var(--blue500)}
+.dev-saved{font-size:10px;color:#4ade80;display:none}
+
+.demo-banner{background:linear-gradient(135deg,#1a1025,#0d1117);border:1px solid rgba(124,58,237,.4);border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-top:4px}
+.demo-icon{font-size:16px;flex-shrink:0}
+.demo-text{flex:1}
+.demo-title{font-family:'Barlow',sans-serif;font-weight:800;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#a78bfa;margin-bottom:2px}
+.demo-sub{font-size:10px;color:#6b7280;font-style:italic}
+.demo-badge{font-family:'Barlow',sans-serif;font-weight:900;font-size:8px;letter-spacing:.08em;text-transform:uppercase;background:#7C3AED;color:#fff;padding:2px 7px;border-radius:3px;flex-shrink:0}
+.chevron{font-size:10px;color:var(--gray500);transition:transform .25s;display:inline-block}
+.chevron.open{transform:rotate(180deg)}
+
+/* Upload */
+.file-drop{border:2px dashed var(--blue300);border-radius:var(--radius);background:#f0f6ff;padding:22px 16px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.file-drop:hover,.file-drop.drag{border-color:var(--blue);background:#e6f0fd}
+.file-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.file-drop-icon{font-size:24px;margin-bottom:6px}
+.file-drop-main{font-family:'Barlow',sans-serif;font-weight:800;font-size:12px;color:var(--blue);text-transform:uppercase;letter-spacing:.07em}
+.file-drop-or{font-size:10px;color:var(--gray500);margin:4px 0}
+.file-drop-btn{display:inline-block;font-family:'Barlow',sans-serif;font-weight:700;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);border:1.5px solid var(--blue300);border-radius:6px;padding:4px 12px;background:#fff;transition:all .2s}
+.file-drop:hover .file-drop-btn{background:var(--blue);color:#fff;border-color:var(--blue)}
+.file-type-badges{display:flex;gap:6px;justify-content:center;margin-top:8px}
+.ftb{font-family:'Barlow',sans-serif;font-weight:800;font-size:9px;letter-spacing:.08em;padding:2px 8px;border-radius:4px;text-transform:uppercase}
+.ftb.csv{background:#e8f4ff;color:var(--blue);border:1px solid var(--blue300)}
+.ftb.xlsx{background:#edfaf3;color:var(--green);border:1px solid #86efac}
+
+.file-stats{display:none;background:var(--dark);border-radius:var(--radius);padding:12px 16px;margin-top:8px}
+.file-stats.visible{display:flex;align-items:center}
+.fs-name{font-size:11px;color:var(--blue300);font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fs-type{font-family:'Barlow',sans-serif;font-weight:900;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-right:4px}
+.fs-type.csv{background:var(--blue);color:#fff}
+.fs-type.xlsx{background:var(--green);color:#fff}
+.fs-divider{width:1px;height:28px;background:rgba(255,255,255,.12);margin:0 14px;flex-shrink:0}
+.fs-stat{display:flex;flex-direction:column;align-items:center;gap:1px;flex-shrink:0}
+.fs-num{font-family:'Barlow',sans-serif;font-weight:900;font-size:22px;color:var(--yellow);line-height:1}
+.fs-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray500)}
+.fs-remove{margin-left:14px;background:none;border:none;cursor:pointer;font-size:14px;color:var(--gray500);flex-shrink:0;line-height:1;padding:2px;transition:color .15s}
+.fs-remove:hover{color:var(--red)}
+
+.table-wrap{overflow-x:auto;max-height:180px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{padding:6px 10px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gray500);border-bottom:1px solid var(--gray100);background:#fafafa;position:sticky;top:0}
+td{padding:5px 10px;border-bottom:1px solid var(--gray100);color:var(--dark);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:hover td{background:var(--blue100)}
+.col-url{color:var(--blue);font-size:10px}
+
+.lang-grid-label{font-family:'Barlow',sans-serif;font-weight:800;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray500);margin-bottom:7px}
+.lang-pills{display:flex;flex-wrap:wrap;gap:6px}
+.lang-pill{display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;border:2px solid var(--gray100);border-radius:9px;cursor:pointer;background:#fff;transition:all .18s;position:relative;min-width:48px}
+.lang-pill:hover{border-color:var(--blue);background:var(--blue100);transform:translateY(-1px)}
+.lang-pill.selected{border-color:var(--blue);background:var(--blue100);box-shadow:0 0 0 3px rgba(0,114,232,.12)}
+.lang-pill.all-pill{background:var(--dark);border-color:var(--dark)}
+.lang-pill.all-pill:hover{background:#2E333C;border-color:#2E333C}
+.lang-pill.all-pill.selected{background:var(--blue);border-color:var(--blue)}
+.lcode{font-family:'Barlow',sans-serif;font-weight:900;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gray500)}
+.lang-pill.selected .lcode{color:var(--blue)}
+.lang-pill.all-pill .lcode,.lang-pill.all-pill.selected .lcode{color:#fff}
+.lang-pill::after{content:attr(data-title);position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;font-family:'Inter',sans-serif;font-size:10px;padding:3px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:20}
+.lang-pill:hover::after{opacity:1}
+.lang-hint{font-size:10px;color:var(--gray500);font-style:italic;margin-top:6px}
+
+.btn-submit{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-family:'Barlow',sans-serif;font-weight:900;font-size:13px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-submit:hover:not(:disabled){background:var(--blue500);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,114,232,.25)}
+.btn-submit:disabled{background:#adbdcc;cursor:not-allowed;opacity:.65}
+.btn-arrow{font-size:15px;transition:transform .2s}
+.btn-submit:hover:not(:disabled) .btn-arrow{transform:translateX(4px)}
+.submit-hint{text-align:center;font-size:10px;color:var(--gray500);font-style:italic}
+.demo-mode-hint{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);border-radius:7px;padding:7px 12px;font-size:10px;color:#a78bfa;text-align:center;display:none}
+.demo-mode-hint.show{display:block}
+
+.gen-lang-pills{display:flex;flex-wrap:wrap;gap:5px;padding:10px 18px 0}
+.gp{padding:3px 10px;border-radius:5px;font-family:'Barlow',sans-serif;font-weight:700;font-size:10px;letter-spacing:.07em;text-transform:uppercase;border:2px solid var(--gray100);background:#fff;color:var(--gray500);transition:all .2s}
+.gp.gp-active{border-color:#fcd34d;background:#fffbeb;color:#92400e}
+.gp.gp-done{border-color:#86efac;background:#edfaf3;color:var(--green)}
+.prog-wrap{padding:10px 18px 16px}
+.prog-label{display:flex;justify-content:space-between;font-size:10px;margin-bottom:5px;color:var(--gray500)}
+.prog-pct{font-weight:700;color:var(--blue)}
+.prog-bar{height:4px;background:var(--gray100);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:var(--blue);border-radius:2px;transition:width .4s ease}
+
+.proc-card{background:var(--dark);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;display:none}
+.proc-card.active{display:block}
+.proc-inner{padding:20px 24px;display:flex;align-items:center;gap:20px}
+.proc-scene{flex-shrink:0;width:90px;height:90px;position:relative}
+.proc-scene canvas{position:absolute;inset:0}
+.proc-text{flex:1;display:flex;flex-direction:column;gap:8px}
+.proc-step{display:flex;align-items:center;gap:8px;opacity:.35;transition:all .4s}
+.proc-step.active{opacity:1}.proc-step.done{opacity:.6}
+.proc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--gray500);transition:background .3s}
+.proc-step.active .proc-dot{background:var(--orange);box-shadow:0 0 8px rgba(255,100,45,.6);animation:pulseDot 1s infinite}
+.proc-step.done .proc-dot{background:var(--green)}
+@keyframes pulseDot{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
+.proc-label{font-family:'Barlow',sans-serif;font-weight:800;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+.proc-step.active .proc-label{color:var(--orange)}
+.proc-step.done .proc-label{color:var(--green)}
+.proc-step:not(.active):not(.done) .proc-label{color:var(--gray500)}
+.proc-sublabel{font-size:10px;color:var(--gray500);margin-left:16px;font-style:italic}
+.proc-step.active .proc-sublabel{color:rgba(255,100,45,.7)}
+.proc-demo-badge{font-family:'Barlow',sans-serif;font-weight:800;font-size:8px;letter-spacing:.08em;text-transform:uppercase;background:#7C3AED;color:#fff;padding:1px 6px;border-radius:3px;margin-left:6px}
+
+.result-lang-tabs{display:flex;gap:5px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--gray100)}
+.rlt{padding:3px 10px;border-radius:5px;font-family:'Barlow',sans-serif;font-weight:700;font-size:10px;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border:2px solid var(--gray100);background:#fff;color:var(--gray500);transition:all .15s}
+.rlt:hover{border-color:var(--blue);color:var(--blue)}
+.rlt.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.rlt.done-tab{background:#edfaf3;border-color:#86efac;color:var(--green)}
+.rlt.done-tab.active{background:var(--green);border-color:var(--green);color:#fff}
+
+.dl-body{padding:24px 20px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.dl-meta{font-size:11px;color:var(--gray500);text-align:center}
+.dl-buttons{display:flex;gap:10px;width:100%}
+.btn-dl{font-family:'Barlow',sans-serif;font-weight:900;font-size:12px;letter-spacing:.09em;text-transform:uppercase;border:none;border-radius:var(--radius);padding:13px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;flex:1}
+.btn-dl.xlsx{background:var(--yellow);color:var(--dark);box-shadow:0 4px 16px rgba(255,209,5,.3)}
+.btn-dl.xlsx:hover:not(:disabled){background:#e8bc00;transform:translateY(-2px)}
+.btn-dl.csv{background:var(--blue);color:#fff;box-shadow:0 4px 16px rgba(0,114,232,.2)}
+.btn-dl.csv:hover:not(:disabled){background:var(--blue500);transform:translateY(-2px)}
+.btn-dl:disabled{opacity:.35;cursor:not-allowed;transform:none !important;box-shadow:none !important}
+.dl-format-note{font-size:10px;color:var(--gray500);font-style:italic;text-align:center}
+
+.log-section{max-width:1060px;margin:20px auto 32px;padding:0 28px}
+.log-card{background:var(--dark);border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.22)}
+.log-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:var(--gray600);border-bottom:1px solid rgba(255,255,255,.07)}
+.log-left{display:flex;align-items:center;gap:9px}
+.log-dot{width:9px;height:9px;border-radius:50%;background:var(--gray500);transition:all .4s;flex-shrink:0}
+.log-dot.running{background:var(--yellow);box-shadow:0 0 0 3px rgba(255,209,5,.2);animation:pulse 1.2s infinite}
+.log-dot.done{background:var(--green);box-shadow:0 0 0 3px rgba(22,135,73,.2)}
+.log-dot.error{background:var(--red);box-shadow:0 0 0 3px rgba(224,0,56,.2)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.log-title-txt{font-family:'Barlow',sans-serif;font-weight:800;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue300)}
+.log-status{font-family:'Barlow',sans-serif;font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray500);transition:color .3s}
+.log-status.running{color:var(--yellow)}.log-status.done{color:var(--green)}.log-status.error{color:var(--red)}
+.log-body{padding:14px 18px;min-height:140px;max-height:300px;overflow-y:auto;font-family:'Courier New',monospace;font-size:12px;line-height:1.75;display:flex;flex-direction:column;gap:2px}
+.log-body::-webkit-scrollbar{width:5px}
+.log-body::-webkit-scrollbar-thumb{background:var(--gray600);border-radius:3px}
+.log-ph{color:#3d4f62;font-style:italic;font-size:11px;margin:auto;text-align:center}
+.log-line{display:flex;gap:10px;align-items:baseline}
+.log-time{color:#3d5a73;flex-shrink:0;font-size:10px}
+.log-icon{flex-shrink:0;width:10px}
+.log-line.info  .log-msg{color:#8ba3bf}
+.log-line.ok    .log-msg{color:#4ade80}
+.log-line.warn  .log-msg{color:#fbbf24}
+.log-line.demo  .log-msg{color:#a78bfa}
+.log-line.error .log-msg{color:#f87171}
+.log-line.step  .log-msg{color:#60a5fa;font-weight:600}
+.toast{display:none;position:fixed;bottom:24px;right:24px;background:var(--green);color:#fff;font-family:'Barlow',sans-serif;font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:10px 18px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);z-index:999;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+.hidden{display:none!important}
+</style>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 497.76 227.17">
+      <defs><style>.l2{fill:#0072e8}.l3{fill:#ffd105}</style></defs>
+      <path class="l2" d="M208.4,146.27c-3.13,3.24-8.04,4.91-15.46,4.91h-21.51v-74.36h21.51c7.42,0,12.32,1.67,15.56,4.81,3.55,3.45,4.91,8.88,4.91,15.98,0,4.8-.42,8.88-3.55,12.01-.94.94-1.98,1.78-3.45,2.51,1.36.73,2.4,1.67,3.34,2.61,3.45,3.86,3.66,9.4,3.66,13.58,0,8.04-1.25,14.1-5.01,17.96ZM190.75,90.19h-4.49v15.87h4.49c5.85,0,7.83-2.4,7.83-7.94s-1.88-7.94-7.83-7.94ZM190.96,118.6h-4.7v19.22h4.7c5.95,0,7.62-2.82,7.62-9.61s-1.88-9.61-7.62-9.61Z"/>
+      <path class="l2" d="M222.09,151.18v-74.36h14.83v74.36h-14.83Z"/>
+      <path class="l2" d="M276.81,151.18l-10.65-27.15-4.81,10.02v17.13h-14.83v-74.36h14.83v31.96l14.1-31.96h14.83l-14.83,30.91,17.23,43.44h-15.87Z"/>
+      <path class="l2" d="M298.73,151.18v-74.36h34.25v13.37h-19.43v16.81h16.71v13.37h-16.71v17.44h19.43v13.37h-34.25Z"/>
+      <path class="l3" d="M342.76,151.18v-11.91l19.11-33.52c1.57-2.72,2.82-7.1,2.82-12.01,0-3.45-1.77-5.22-4.28-5.22s-4.49,1.67-4.49,5.12v4.49h-13.99v-3.97c0-6.47,1.78-10.23,5.12-13.37,3.34-3.24,8.36-4.8,13.37-4.8s9.29,1.15,12.74,4.28c3.24,2.92,5.54,7.52,5.54,13.99,0,5.22-1.57,11.38-4.07,15.66l-16.81,28.72h20.89v12.53h-35.92Z"/>
+      <path class="l3" d="M418.89,140.32v10.86h-13.99v-10.86h-21.2v-12.53l19.22-50.96h13.47l-18.27,50.96h6.79v-8.98h13.99v8.98h5.12v12.53h-5.12Z"/>
+      <path class="l2" d="M115.4,127.77c-.54,0-1.08-.1-1.59-.31-1.05-.42-1.87-1.23-2.32-2.28-.44-1.05-.45-2.2-.03-3.25.42-1.05,1.23-1.87,2.28-2.32.53-.22,1.09-.34,1.66-.34,1.71,0,3.24,1.02,3.91,2.59.44,1.05.45,2.2.03,3.25-.43,1.05-1.23,1.88-2.28,2.32-.54.23-1.1.34-1.66.34Z"/>
+      <path class="l2" d="M147.66,114.07c-.54,0-1.07-.1-1.59-.31-1.06-.43-1.88-1.24-2.32-2.28-.44-1.05-.45-2.2-.03-3.25.42-1.05,1.23-1.87,2.28-2.32.53-.22,1.09-.34,1.66-.34,1.71,0,3.25,1.02,3.91,2.59.44,1.04.45,2.2.03,3.25-.42,1.05-1.23,1.88-2.28,2.32-.53.23-1.1.34-1.66.34Z"/>
+      <path class="l2" d="M143.98,125c-5.93-1.4-12.02,1.18-15.14,6.42-.15.26-.32.52-.49.78-2.32,3.46-5.85,5.81-9.94,6.61-4.09.81-8.24-.03-11.7-2.35-5.09-3.36-11.7-3.02-16.44.85-2.56,2.13-5.81,3.4-9.16,3.56-.27.01-.54.02-.81.02-1.48,0-2.93-.21-4.33-.61v1.27c0,5.76,4.67,10.43,10.43,10.43h55.13c5.76,0,10.43-4.67,10.43-10.43v-16.75c-2.59.75-5.37.84-8,.2Z"/>
+      <path class="l2" d="M79.54,109.73c3.34-.17,6.71.76,9.48,2.63,5.09,3.35,11.7,3.02,16.43-.85,3.8-3.15,8.95-4.32,13.75-3.11,5.86,1.33,11.89-1.28,14.98-6.48,1.67-2.85,4.28-5.14,7.34-6.43,3.35-1.42,7-1.63,10.45-.62v-8.45c0-5.76-4.67-10.43-10.43-10.43h-55.13c-5.76,0-10.43,4.67-10.43,10.43v23.92c1.15-.33,2.33-.55,3.56-.61Z"/>
+      <path class="l2" d="M80.34,129.55c-1.06,0-2.06-.38-2.85-1.1-.84-.76-1.34-1.81-1.4-2.94-.06-1.13.33-2.22,1.09-3.06.76-.84,1.8-1.34,2.94-1.4h0c2.34-.12,4.34,1.69,4.46,4.03.06,1.13-.33,2.22-1.09,3.06-.76.84-1.8,1.34-2.94,1.4-.07,0-.14,0-.21,0Z"/>
+    </svg>
+  </div>
+  <div class="topbar-pipe"></div>
+  <div class="topbar-title">SEO Keyword Research Tool <span>&</span> Meta Generator</div>
+</div>
+
+<div class="page-grid">
+  <!-- LEFT -->
+  <div class="col">
+
+    <!-- Dev Config -->
+    <div class="card" style="border:1px solid #21262d">
+      <div class="card-header devhd" onclick="toggleDev()">
+        <span style="font-size:11px">🔧</span>
+        <h2>Developer Config</h2>
+        <span class="chevron" id="devChevron">▼</span>
+      </div>
+      <div class="dev-panel" id="devPanel">
+        <div class="dev-inner">
+          <div class="dev-field">
+            <div class="dev-label">Semrush API Key <span class="dev-optional">optional — leave empty for demo mode</span></div>
+            <div class="dev-input-wrap">
+              <input type="password" class="dev-input" id="devSemrush" placeholder="Semrush API Key… (leave empty for demo mode)" oninput="onDevInput(this)" autocomplete="off">
+              <button class="eye-btn" onclick="toggleVis('devSemrush',this)">👁</button>
+            </div>
+          </div>
+          <div class="dev-field">
+            <div class="dev-label">Claude API Key <span class="dev-optional">for real translations & descriptions</span></div>
+            <div class="dev-input-wrap">
+              <input type="password" class="dev-input" id="devClaude" placeholder="Anthropic API Key…" oninput="onDevInput(this)" autocomplete="off">
+              <button class="eye-btn" onclick="toggleVis('devClaude',this)">👁</button>
+            </div>
+          </div>
+          <div class="demo-banner" id="demoBanner">
+            <div class="demo-icon">🚀</div>
+            <div class="demo-text">
+              <div class="demo-title">Demo Mode Active</div>
+              <div class="demo-sub">Semrush search volumes are simulated · Claude generates real metadata (if key is set)</div>
+            </div>
+            <span class="demo-badge">Demo</span>
+          </div>
+          <div class="dev-save-row">
+            <button class="btn-devsave" onclick="saveDevConfig()">Save Config</button>
+            <span class="dev-saved" id="devSavedMsg">✓ Saved to session</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload -->
+    <div class="card">
+      <div class="card-header navy">
+        <h2>Upload</h2>
+        <span id="headerBadge" style="font-size:9px;color:var(--blue300)">No file</span>
+      </div>
+      <div class="card-body">
+        <div class="file-drop" id="dropzone">
+          <input type="file" accept=".csv,.xlsx,.xls" id="fileInput">
+          <div class="file-drop-icon">📂</div>
+          <div class="file-drop-main">Drop your file here</div>
+          <div class="file-drop-or">or</div>
+          <div class="file-drop-btn">Browse files</div>
+          <div class="file-type-badges">
+            <span class="ftb csv">CSV</span>
+            <span class="ftb xlsx">XLSX</span>
+          </div>
+        </div>
+        <div class="file-stats" id="fileStats">
+          <span class="fs-type" id="fsType">CSV</span>
+          <div class="fs-name" id="fsName">—</div>
+          <div class="fs-divider"></div>
+          <div class="fs-stat"><div class="fs-num" id="fsRows">0</div><div class="fs-label">Rows</div></div>
+          <div class="fs-divider"></div>
+          <div class="fs-stat"><div class="fs-num" id="fsCols">0</div><div class="fs-label">Cols</div></div>
+          <button class="fs-remove" onclick="clearFile()" title="Remove">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Select Languages -->
+    <div class="card">
+      <div class="card-header cobalt">
+        <h2>Select Language(s)</h2>
+      </div>
+      <div class="table-wrap" id="previewWrap" style="display:none">
+        <table id="previewTable"></table>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="lang-grid-label">Target languages for output</div>
+          <div class="lang-pills">
+            <div class="lang-pill all-pill selected" id="pill_ALL" data-title="All languages" onclick="toggleLang('ALL')"><span class="lcode">ALL</span></div>
+            <div class="lang-pill" id="pill_EN" data-title="English"     onclick="toggleLang('EN')"><span class="lcode">EN</span></div>
+            <div class="lang-pill" id="pill_ES" data-title="Spanish"     onclick="toggleLang('ES')"><span class="lcode">ES</span></div>
+            <div class="lang-pill" id="pill_IT" data-title="Italian"     onclick="toggleLang('IT')"><span class="lcode">IT</span></div>
+            <div class="lang-pill" id="pill_NL" data-title="Dutch"       onclick="toggleLang('NL')"><span class="lcode">NL</span></div>
+            <div class="lang-pill" id="pill_FR" data-title="French"      onclick="toggleLang('FR')"><span class="lcode">FR</span></div>
+            <div class="lang-pill" id="pill_FI" data-title="Finnish"     onclick="toggleLang('FI')"><span class="lcode">FI</span></div>
+            <div class="lang-pill" id="pill_PL" data-title="Polish"      onclick="toggleLang('PL')"><span class="lcode">PL</span></div>
+            <div class="lang-pill" id="pill_DK" data-title="Danish"      onclick="toggleLang('DK')"><span class="lcode">DK</span></div>
+            <div class="lang-pill" id="pill_SI" data-title="Slovenian"   onclick="toggleLang('SI')"><span class="lcode">SI</span></div>
+          </div>
+          <div class="lang-hint" id="langHint">All 9 languages selected</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div class="col">
+
+    <!-- Generate -->
+    <div class="card">
+      <div class="card-header navy">
+        <h2>Run Generation</h2>
+        <span id="progBadge" style="font-size:9px;color:var(--blue300)"></span>
+      </div>
+      <div class="card-body">
+        <button class="btn-submit" id="startBtn" onclick="startGeneration()" disabled>
+          <span>Start Generation</span>
+          <span class="btn-arrow">→</span>
+        </button>
+        <div class="submit-hint" id="startHint">Upload a file to get started</div>
+        <div class="demo-mode-hint" id="demoModeHint">🚀 Demo mode — Semrush volumes simulated · real Claude generation</div>
+      </div>
+      <div id="runWrap" style="display:none;border-top:1px solid var(--gray100)">
+        <div class="gen-lang-pills" id="genPills"></div>
+        <div class="prog-wrap">
+          <div class="prog-label">
+            <span id="progLabel">Initializing…</span>
+            <span class="prog-pct" id="progPct">0%</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Processing animation -->
+    <div class="proc-card" id="procCard">
+      <div class="proc-inner">
+        <div class="proc-scene"><canvas id="procCanvas" width="90" height="90"></canvas></div>
+        <div class="proc-text">
+          <div class="proc-step" id="pStep0">
+            <div class="proc-dot"></div>
+            <div>
+              <div class="proc-label">Semrush API <span class="proc-demo-badge" id="demoBadgeSV" style="display:none">DEMO</span></div>
+              <div class="proc-sublabel" id="pSub0">Fetching search volumes…</div>
+            </div>
+          </div>
+          <div class="proc-step" id="pStep1">
+            <div class="proc-dot"></div>
+            <div><div class="proc-label">Claude · Translation</div><div class="proc-sublabel" id="pSub1">Translating keywords…</div></div>
+          </div>
+          <div class="proc-step" id="pStep2">
+            <div class="proc-dot"></div>
+            <div><div class="proc-label">Code · Meta Title</div><div class="proc-sublabel" id="pSub2">Building title…</div></div>
+          </div>
+          <div class="proc-step" id="pStep3">
+            <div class="proc-dot"></div>
+            <div><div class="proc-label">Claude · Meta Description</div><div class="proc-sublabel" id="pSub3">Generating description…</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results preview -->
+    <div class="card hidden" id="resultCard">
+      <div class="card-header" style="background:var(--gray600)">
+        <span style="background:var(--green);color:#fff;font-family:'Barlow',sans-serif;font-weight:900;font-size:9px;padding:2px 7px;border-radius:4px;letter-spacing:.07em">✓ DONE</span>
+        <h2>Results Preview</h2>
+        <span id="doneBadge" style="font-size:9px;color:#4ade80">—</span>
+      </div>
+      <div class="result-lang-tabs" id="resultTabs"></div>
+      <div class="table-wrap"><table id="resultTable"></table></div>
+    </div>
+
+    <!-- Download -->
+    <div class="card">
+      <div class="card-header cobalt">
+        <h2>Download</h2>
+        <span id="dlBadge" style="font-size:9px;color:var(--blue300)">—</span>
+      </div>
+      <div class="dl-body">
+        <div class="dl-meta" id="dlMeta">No generation completed yet</div>
+        <div class="dl-buttons">
+          <button class="btn-dl xlsx" id="dlXlsxBtn" onclick="downloadXLSX()" disabled>⬇ &nbsp;XLSX</button>
+          <button class="btn-dl csv"  id="dlCsvBtn"  onclick="downloadCSVs()" disabled>⬇ &nbsp;CSV</button>
+        </div>
+        <div class="dl-format-note">XLSX = one file, one tab per language &nbsp;·&nbsp; CSV = one file per language</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Pipeline Log -->
+<div class="log-section">
+  <div class="log-card">
+    <div class="log-header">
+      <div class="log-left">
+        <div class="log-dot" id="logDot"></div>
+        <div class="log-title-txt">Pipeline Log</div>
+      </div>
+      <div class="log-status" id="logStatus">Idle</div>
+    </div>
+    <div class="log-body" id="logBody">
+      <div class="log-ph">No activity yet — upload a file and start the generation</div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+const LANGS_META={EN:{db:'us',langName:'English'},ES:{db:'es',langName:'Spanish'},IT:{db:'it',langName:'Italian'},NL:{db:'nl',langName:'Dutch'},FR:{db:'fr',langName:'French'},FI:{db:'fi',langName:'Finnish'},PL:{db:'pl',langName:'Polish'},DK:{db:'dk',langName:'Danish'},SI:{db:'si',langName:'Slovenian'}};
+const ALL_LANGS=Object.keys(LANGS_META);
+const SLUG_MAP={DE:{s:'online kaufen - Premium Marken',m:'online kaufen - Top Marken',c:'kaufen - Top Marken'},EN:{s:'buy online - premium brands',m:'buy online - top brands',c:'buy - top brands'},ES:{s:'comprar online - marcas premium',m:'comprar online - top marcas',c:'comprar - top marcas'},IT:{s:'acquista online - marchi premium',m:'acquista online - top marchi',c:'acquista - top marchi'},NL:{s:'online kopen - premium merken',m:'online kopen - topmerken',c:'kopen - topmerken'},FR:{s:'acheter en ligne - marques premium',m:'acheter en ligne - top marques',c:'acheter - top marques'},FI:{s:'osta netistä - premium-merkit',m:'osta netistä - huippumerkit',c:'osta - huippumerkit'},PL:{s:'kup online - marki premium',m:'kup online - topowe marki',c:'kup - topowe marki'},DK:{s:'køb online - premium mærker',m:'køb online - top mærker',c:'køb - top mærker'},SI:{s:'kupi online - premium znamke',m:'kupi online - top znamke',c:'kupi - top znamke'}};
+const HEADERS=['#','Current URL','Main KW','SV Main KW','Secondary KW1','SV KW1','Secondary KW2','SV KW2','Secondary KW3','SV KW3','Secondary KW4','SV KW4','Secondary KW5','SV KW5','Meta Title','Length','Meta Description','Length2'];
+const DOMAIN='bike24.com';
+let csvData=[],results={},selectedLangs=[...ALL_LANGS];
+
+function demoSV(kw){if(!kw)return'—';let h=0;for(let i=0;i<kw.length;i++)h=(h*31+kw.charCodeAt(i))&0xffffffff;const b=[140,210,320,480,720,1000,1300,1900,2400,3600,5400,8100,12000,18000,27000];return String(b[Math.abs(h)%b.length]);}
+function isDemoMode(){return!document.getElementById('devSemrush').value.trim();}
+
+// Comet
+let animFrame=null,particles=[],cometAngle=0,currentLang='DE';
+function startComet(){
+  const cv=document.getElementById('procCanvas'),ctx=cv.getContext('2d');
+  particles=[];cancelAnimationFrame(animFrame);
+  function draw(){
+    ctx.clearRect(0,0,90,90);const cx=45,cy=45,r=28;cometAngle+=0.04;
+    ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle='rgba(255,100,45,0.12)';ctx.lineWidth=1;ctx.stroke();
+    for(let i=8;i>=0;i--){const a=cometAngle-i*0.18,px=cx+Math.cos(a)*r,py=cy+Math.sin(a)*r;ctx.beginPath();ctx.arc(px,py,3.5-i*0.3,0,Math.PI*2);ctx.fillStyle=`rgba(255,${100+i*5},45,${(1-i/9)*0.55})`;ctx.fill();}
+    const hx=cx+Math.cos(cometAngle)*r,hy=cy+Math.sin(cometAngle)*r;
+    const g=ctx.createRadialGradient(hx,hy,0,hx,hy,8);g.addColorStop(0,'rgba(255,100,45,1)');g.addColorStop(0.5,'rgba(255,100,45,0.4)');g.addColorStop(1,'rgba(255,100,45,0)');
+    ctx.beginPath();ctx.arc(hx,hy,8,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+    ctx.beginPath();ctx.arc(hx,hy,3.5,0,Math.PI*2);ctx.fillStyle='#FF642D';ctx.fill();
+    if(Math.random()<0.4)particles.push({x:hx,y:hy,vx:(Math.random()-.5)*1.8,vy:(Math.random()-.5)*1.8,life:1,col:Math.random()<.5?'255,100,45':'124,58,237'});
+    for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.life-=0.06;if(p.life<=0){particles.splice(i,1);continue;}ctx.beginPath();ctx.arc(p.x,p.y,2*p.life,0,Math.PI*2);ctx.fillStyle=`rgba(${p.col},${p.life})`;ctx.fill();}
+    const pulse=0.7+0.3*Math.sin(Date.now()*.004);
+    const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,12);cg.addColorStop(0,`rgba(0,114,232,${pulse*.9})`);cg.addColorStop(.6,`rgba(0,114,232,${pulse*.2})`);cg.addColorStop(1,'rgba(0,114,232,0)');
+    ctx.beginPath();ctx.arc(cx,cy,12,0,Math.PI*2);ctx.fillStyle=cg;ctx.fill();
+    ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fillStyle='#0072E8';ctx.fill();
+    animFrame=requestAnimationFrame(draw);
+  }draw();
+}
+function stopComet(){cancelAnimationFrame(animFrame);animFrame=null;document.getElementById('procCanvas').getContext('2d').clearRect(0,0,90,90);}
+function setProcStep(step,kw){
+  for(let i=0;i<4;i++){const el=document.getElementById('pStep'+i);el.classList.remove('active','done');if(i<step)el.classList.add('done');else if(i===step)el.classList.add('active');}
+  const ln=LANGS_META[currentLang]?.langName||'German';
+  const subs=[`Fetching SV for "${kw}"…`,`Translating "${kw}" → ${ln}…`,`Building title for "${kw}"…`,`Generating description for "${kw}"…`];
+  const s=document.getElementById('pSub'+step);if(s&&kw)s.textContent=subs[step]||'';
+}
+
+function toggleDev(){const p=document.getElementById('devPanel'),c=document.getElementById('devChevron');p.classList.toggle('open');c.classList.toggle('open',p.classList.contains('open'));}
+function toggleVis(id,btn){const el=document.getElementById(id);el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'👁':'🙈';}
+function onDevInput(el){el.classList.toggle('has-value',el.value.trim().length>5);updateDemoUI();}
+function updateDemoUI(){
+  const demo=isDemoMode();
+  document.getElementById('demoBanner').style.display=demo?'flex':'none';
+  document.getElementById('demoBadgeSV').style.display=demo?'inline':'none';
+  if(csvData.length>0&&selectedLangs.length>0)document.getElementById('demoModeHint').classList.toggle('show',demo);
+}
+function saveDevConfig(){const msg=document.getElementById('devSavedMsg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500);logLine('Config saved'+(isDemoMode()?' — Semrush: demo mode active':''),'ok');updateDemoUI();}
+function getSemKey(){return document.getElementById('devSemrush').value.trim();}
+function getClKey(){return document.getElementById('devClaude').value.trim();}
+
+const dz=document.getElementById('dropzone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');handleFile(e.dataTransfer.files[0])});
+document.getElementById('fileInput').addEventListener('change',e=>handleFile(e.target.files[0]));
+function handleFile(f){
+  if(!f)return;const n=f.name.toLowerCase();
+  if(n.endsWith('.csv')){const r=new FileReader();r.onload=e=>parseCSV(e.target.result,f.name);r.readAsText(f,'UTF-8');}
+  else if(n.endsWith('.xlsx')||n.endsWith('.xls')){const r=new FileReader();r.onload=e=>parseXLSX(e.target.result,f.name);r.readAsArrayBuffer(f);}
+  else showToast('Please upload a CSV or XLSX file');
+}
+function parseCSV(text,fname){
+  const lines=text.trim().split('\n'),headers=lines[0].split(',').map(h=>h.replace(/"/g,'').trim());
+  csvData=lines.slice(1).map(line=>{const cols=[];let cur='',inQ=false;for(let i=0;i<line.length;i++){if(line[i]==='"')inQ=!inQ;else if(line[i]===','&&!inQ){cols.push(cur.trim());cur='';}else cur+=line[i];}cols.push(cur.trim());return cols;}).filter(r=>r[1]);
+  showStats(fname,'csv',csvData.length,headers.length);logLine('▶ CSV loaded: '+fname,'step');logLine('· '+csvData.length+' rows · '+headers.length+' columns','ok');
+}
+function parseXLSX(buf,fname){
+  const wb=XLSX.read(buf,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  if(raw.length<2)return showToast('XLSX appears to be empty');
+  csvData=raw.slice(1).filter(r=>r[1]).map(r=>r.map(c=>String(c)));
+  showStats(fname,'xlsx',csvData.length,raw[0].length);logLine('▶ XLSX loaded: '+fname+' (tab: '+wb.SheetNames[0]+')','step');logLine('· '+csvData.length+' rows · '+raw[0].length+' columns','ok');
+}
+function showStats(fname,type,rows,cols){
+  const short=fname.length>30?fname.slice(0,28)+'…':fname;
+  document.getElementById('fsName').textContent=short;document.getElementById('fsRows').textContent=rows;document.getElementById('fsCols').textContent=cols;
+  const ft=document.getElementById('fsType');ft.textContent=type.toUpperCase();ft.className='fs-type '+type;
+  document.getElementById('fileStats').classList.add('visible');document.getElementById('headerBadge').textContent=rows+' rows · '+cols+' cols';
+  buildPreview();document.getElementById('previewWrap').style.display='block';updateHint();setLogState('running');updateDemoUI();
+}
+function clearFile(){csvData=[];document.getElementById('fileInput').value='';document.getElementById('fileStats').classList.remove('visible');document.getElementById('previewWrap').style.display='none';document.getElementById('headerBadge').textContent='No file';updateHint();}
+function buildPreview(){
+  const cols=[{l:'#',i:0},{l:'URL',i:1},{l:'Main KW',i:2},{l:'SV',i:3},{l:'Meta Title',i:14}];
+  let h='<thead><tr>'+cols.map(c=>`<th>${c.l}</th>`).join('')+'</tr></thead><tbody>';
+  csvData.slice(0,5).forEach(row=>{h+='<tr>'+cols.map(c=>{const v=row[c.i]||'';const cls=c.l==='URL'?' class="col-url"':'';return `<td${cls} title="${v}">${v.length>28?v.slice(0,28)+'…':v}</td>`;}).join('')+'</tr>';});
+  if(csvData.length>5)h+=`<tr><td colspan="5" style="text-align:center;color:var(--gray500);font-style:italic;font-size:10px;padding:6px">… and ${csvData.length-5} more rows</td></tr>`;
+  document.getElementById('previewTable').innerHTML=h+'</tbody>';
+}
+function toggleLang(code){
+  if(code==='ALL'){const allOn=selectedLangs.length===ALL_LANGS.length;if(allOn){selectedLangs=[];ALL_LANGS.forEach(l=>document.getElementById('pill_'+l).classList.remove('selected'));}else{selectedLangs=[...ALL_LANGS];ALL_LANGS.forEach(l=>document.getElementById('pill_'+l).classList.add('selected'));}document.getElementById('pill_ALL').classList.toggle('selected',selectedLangs.length===ALL_LANGS.length);}
+  else{const p=document.getElementById('pill_'+code),i=selectedLangs.indexOf(code);if(i>=0){selectedLangs.splice(i,1);p.classList.remove('selected');}else{selectedLangs.push(code);p.classList.add('selected');}document.getElementById('pill_ALL').classList.toggle('selected',selectedLangs.length===ALL_LANGS.length);}
+  const n=selectedLangs.length;document.getElementById('langHint').textContent=n===0?'No language selected':n===ALL_LANGS.length?'All 9 languages selected':n+' language'+(n>1?'s':'')+' selected: '+selectedLangs.join(', ');
+  updateHint();
+}
+function updateHint(){
+  const hasCsv=csvData.length>0,hasL=selectedLangs.length>0;
+  const btn=document.getElementById('startBtn'),hint=document.getElementById('startHint');
+  if(!hasCsv){hint.textContent='Upload a file to get started';btn.disabled=true;document.getElementById('demoModeHint').classList.remove('show');return;}
+  if(!hasL){hint.textContent='Select at least one language';btn.disabled=true;return;}
+  hint.textContent=csvData.length+' rows · DE + '+selectedLangs.length+' language'+(selectedLangs.length>1?'s':'')+' · '+(selectedLangs.length+1)+' tabs in output';
+  btn.disabled=false;updateDemoUI();
+}
+function logLine(msg,type='info'){const body=document.getElementById('logBody');const ph=body.querySelector('.log-ph');if(ph)ph.remove();const t=new Date().toTimeString().slice(0,8);const icons={info:'·',ok:'✓',warn:'⚠',error:'✕',step:'▶',demo:'◈'};const div=document.createElement('div');div.className='log-line '+type;div.innerHTML=`<span class="log-time">${t}</span><span class="log-icon">${icons[type]||'·'}</span><span class="log-msg">${msg}</span>`;body.appendChild(div);body.scrollTop=body.scrollHeight;}
+function setLogState(s){document.getElementById('logDot').className='log-dot '+s;const el=document.getElementById('logStatus');el.className='log-status '+s;el.textContent={idle:'Idle',running:'Running…',done:'Completed',error:'Error'}[s]||s;}
+
+function startGeneration(){
+  const allTabs=['DE',...selectedLangs];results={};
+  document.getElementById('genPills').innerHTML=allTabs.map(l=>`<div class="gp" id="gp_${l}">${l}</div>`).join('');
+  document.getElementById('runWrap').style.display='block';document.getElementById('resultCard').classList.add('hidden');
+  document.getElementById('dlXlsxBtn').disabled=true;document.getElementById('dlCsvBtn').disabled=true;
+  document.getElementById('dlMeta').textContent='Generation in progress…';document.getElementById('dlBadge').textContent='';
+  document.getElementById('procCard').classList.add('active');startComet();setLogState('running');
+  const demo=isDemoMode();
+  logLine('','info');logLine('▶ Generation started'+(demo?' · Demo mode (Semrush simulated)':''),'step');
+  if(demo)logLine('◈ No Semrush key — search volumes will be simulated','demo');
+  logLine('· Tabs: DE → '+selectedLangs.join(' → '),'info');
+  runGeneration(getSemKey(),getClKey(),allTabs,demo);
+}
+function setProgress(done,total,label){const pct=total?Math.round(done/total*100):0;document.getElementById('progFill').style.width=pct+'%';document.getElementById('progPct').textContent=pct+'%';document.getElementById('progLabel').textContent=label;document.getElementById('progBadge').textContent=done+' / '+total;}
+
+async function runGeneration(semKey,clKey,allTabs,demo){
+  const total=allTabs.length*csvData.length;let done=0;
+  for(const lang of allTabs){
+    currentLang=lang;const gp=document.getElementById('gp_'+lang);if(gp)gp.className='gp gp-active';
+    const isDE=lang==='DE',langMeta=isDE?{db:'de',langName:'German'}:LANGS_META[lang];
+    logLine('','info');logLine('▶ ['+lang+'] '+langMeta.langName+' · '+csvData.length+' rows','step');
+    results[lang]=[];
+    for(const row of csvData){
+      const url=row[1]||'',kwDE=(row[2]||'').trim(),nb1DE=(row[4]||'').trim();
+      let kw=kwDE,nb1=nb1DE,nebenKws=[row[4],row[6],row[8],row[10],row[12]].map(k=>(k||'').trim());
+      let svs=[];
+      setProcStep(0,kwDE);
+      const kwsFetch=[kwDE,...nebenKws.filter(Boolean)];
+      if(semKey){for(const k of kwsFetch){try{svs.push(await fetchSV(semKey,k,langMeta.db));logLine('· ['+lang+'] SV "'+k+'": '+svs[svs.length-1],'ok');}catch(e){svs.push('—');}}}
+      else{await new Promise(r=>setTimeout(r,100));for(const k of kwsFetch){const sv=demoSV(k);svs.push(sv);logLine('· ['+lang+'] SV "'+k+'": '+sv+' ◈ simulated','demo');}}
+      setProcStep(1,kwDE);
+      if(!isDE&&clKey){try{const tr=await translateKws(clKey,kwDE,nebenKws.filter(Boolean),langMeta.langName);kw=tr.main||kwDE;nb1=tr.neben1||nb1DE;nebenKws=[tr.neben1,tr.neben2,tr.neben3,tr.neben4,tr.neben5].map(k=>k||'');logLine('· ['+lang+'] "'+kwDE+'" → "'+kw+'"','ok');}catch(e){logLine('⚠ ['+lang+'] Translation failed','warn');}}
+      else if(!isDE&&!clKey){await new Promise(r=>setTimeout(r,60));logLine('· ['+lang+'] No Claude key — keeping DE keyword','warn');}
+      setProcStep(2,kwDE);
+      const title=buildTitle(kw,lang);logLine('· ['+lang+'] Title ('+title.length+' chars): '+title,'ok');
+      setProcStep(3,kwDE);
+      let desc=isDE?(row[16]||''):'';
+      if(clKey){try{desc=await genDesc(clKey,kw,nb1,langMeta.langName,lang);logLine('· ['+lang+'] Desc ('+desc.length+' chars) ✓','ok');}catch(e){logLine('⚠ ['+lang+'] Description failed','warn');}}
+      else if(!clKey&&!isDE){await new Promise(r=>setTimeout(r,60));desc='[No Claude key — meta description placeholder]';logLine('· ['+lang+'] No Claude key — placeholder inserted','warn');}
+      results[lang].push({rowNum:row[0]||'',url,kw,sv0:svs[0]||'—',nb1:nebenKws[0]||'',sv1:svs[1]||'—',nb2:nebenKws[1]||'',sv2:svs[2]||'—',nb3:nebenKws[2]||'',sv3:svs[3]||'—',nb4:nebenKws[3]||'',sv4:svs[4]||'—',nb5:nebenKws[4]||'',sv5:svs[5]||'—',title,titleLen:title.length,desc,descLen:desc.length});
+      done++;setProgress(done,total,lang+': "'+kwDE+'"');
+    }
+    if(gp)gp.className='gp gp-done';logLine('✓ ['+lang+'] '+csvData.length+' rows done','ok');
+  }
+  stopComet();document.getElementById('procCard').classList.remove('active');
+  setLogState('done');logLine('','info');logLine('✓ Generation complete'+(demo?' (volumes simulated)':''),'ok');
+  finish(allTabs);
+}
+
+function buildTitle(kw,lang){const l=kw.length,s=SLUG_MAP[lang]||SLUG_MAP.DE;let slug;if(l<=10)slug=s.s;else if(l<=15)slug=s.m;else if(l<=18){const c=cap(kw)+' '+s.m+' | '+DOMAIN;slug=c.length<=60?s.m:s.c;}else slug=s.c;return cap(kw)+' '+slug+' | '+DOMAIN;}
+function cap(s){return s?s[0].toUpperCase()+s.slice(1):'';}
+async function translateKws(ak,kw,nbs,ln){const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':ak,'anthropic-version':'2023-06-01','content-type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,messages:[{role:'user',content:`Translate these cycling keywords to ${ln}. Return ONLY JSON:\n{"main":"...","neben1":"...","neben2":"...","neben3":"...","neben4":"...","neben5":"..."}\nMain: ${kw}\nSecondary: ${nbs.join(', ')}`}]})});return JSON.parse((await r.json()).content[0].text.replace(/```json|```/g,'').trim());}
+async function fetchSV(ak,kw,db){if(!kw)return'—';const r=await fetch(`https://api.semrush.com/?type=phrase_this&key=${ak}&phrase=${encodeURIComponent(kw)}&database=${db}&export_columns=Ph,Nq`);const lines=(await r.text()).trim().split('\n');return lines.length<2?'—':lines[1].split(';')[1]||'—';}
+async function genDesc(ak,kw,nb,ln,lang){const conn={DE:'bei',EN:'at',ES:'en',IT:'su',NL:'bij',FR:'chez',FI:'BIKE24:stä',PL:'w',DK:'hos',SI:'pri'}[lang]||'bei';const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':ak,'anthropic-version':'2023-06-01','content-type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,messages:[{role:'user',content:`Write a meta description in ${ln} for BIKE24.\nMain keyword: ${kw}\nSecondary: ${nb||''}\nTemplate: [KW] ${conn} BIKE24 ► [phrase] ✓ [USP1] ✓ [USP2] ✓ [USP3] ➤ [CTA!]\nRules: 120–160 characters. Output ONLY the text.`}]})});return((await r.json()).content?.[0]?.text||'').trim();}
+
+function finish(allTabs){
+  const n=allTabs.length;document.getElementById('doneBadge').textContent=n+' tabs · '+csvData.length+' rows';
+  document.getElementById('dlBadge').textContent=n+' tabs';
+  document.getElementById('dlMeta').textContent=n+' tabs · '+csvData.length+' rows each · columns A–R';
+  const rt=document.getElementById('resultTabs');rt.innerHTML=allTabs.map((l,i)=>`<div class="rlt done-tab${i===0?' active':''}" onclick="showResult('${l}')">${l}</div>`).join('');
+  showResult(allTabs[0]);document.getElementById('resultCard').classList.remove('hidden');
+  document.getElementById('dlXlsxBtn').disabled=false;document.getElementById('dlCsvBtn').disabled=false;
+  showToast('✅ '+n+' tabs ready!');
+}
+function showResult(lang){
+  document.querySelectorAll('#resultTabs .rlt').forEach(t=>t.classList.remove('active'));
+  const el=[...document.querySelectorAll('#resultTabs .rlt')].find(t=>t.textContent===lang);if(el)el.classList.add('active');
+  const data=results[lang]||[];
+  let h='<thead><tr><th>URL</th><th>Main KW</th><th>SV</th><th>Meta Title</th><th>L</th><th>Description</th><th>L</th></tr></thead><tbody>';
+  data.slice(0,5).forEach(r=>{const tc=r.titleLen>=50&&r.titleLen<=60?'var(--green)':'var(--red)';const dc=r.descLen>=120&&r.descLen<=160?'var(--green)':'var(--red)';h+=`<tr><td class="col-url" title="${r.url}">${r.url.split('/').slice(-1)[0]||r.url}</td><td>${r.kw}</td><td>${r.sv0}</td><td title="${r.title}">${r.titleLen>=50&&r.titleLen<=60?'✅':'⚠'} ${r.title.length>24?r.title.slice(0,24)+'…':r.title}</td><td style="font-weight:700;color:${tc}">${r.titleLen}</td><td title="${r.desc}">${r.descLen>=120&&r.descLen<=160?'✅':'⚠'} ${r.desc.length>30?r.desc.slice(0,30)+'…':r.desc}</td><td style="font-weight:700;color:${dc}">${r.descLen}</td></tr>`;});
+  if(data.length>5)h+=`<tr><td colspan="7" style="text-align:center;color:var(--gray500);font-style:italic;font-size:10px;padding:6px">… and ${data.length-5} more rows</td></tr>`;
+  document.getElementById('resultTable').innerHTML=h+'</tbody>';
+}
+function downloadXLSX(){
+  const wb=XLSX.utils.book_new(),allTabs=['DE',...selectedLangs],date=new Date().toISOString().slice(0,10);
+  allTabs.forEach(lang=>{const data=results[lang]||[],wsData=[HEADERS];data.forEach((r,i)=>{wsData.push([r.rowNum||(i+1),r.url,r.kw,r.sv0,r.nb1,r.sv1,r.nb2,r.sv2,r.nb3,r.sv3,r.nb4,r.sv4,r.nb5,r.sv5,r.title,r.titleLen,r.desc,r.descLen]);});const ws=XLSX.utils.aoa_to_sheet(wsData);ws['!cols']=[{wch:5},{wch:55},{wch:22},{wch:14},{wch:22},{wch:14},{wch:22},{wch:14},{wch:22},{wch:14},{wch:22},{wch:14},{wch:22},{wch:14},{wch:55},{wch:8},{wch:120},{wch:8}];XLSX.utils.book_append_sheet(wb,ws,lang);});
+  const fname=`BIKE24_SEO_${date}_${allTabs.length}Tabs${isDemoMode()?'_DEMO':''}.xlsx`;XLSX.writeFile(wb,fname);logLine('⬇ XLSX: '+fname,'ok');showToast('⬇ '+fname);
+}
+function downloadCSVs(){
+  const allTabs=['DE',...selectedLangs],date=new Date().toISOString().slice(0,10);
+  allTabs.forEach(lang=>{const data=results[lang]||[];let csv=HEADERS.join(',')+'\n';data.forEach((r,i)=>{const row=[r.rowNum||(i+1),r.url,r.kw,r.sv0,r.nb1,r.sv1,r.nb2,r.sv2,r.nb3,r.sv3,r.nb4,r.sv4,r.nb5,r.sv5,r.title,r.titleLen,r.desc,r.descLen];csv+=row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')+'\n';});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));a.download=`BIKE24_SEO_${lang}_${date}${isDemoMode()?'_DEMO':''}.csv`;a.click();});
+  logLine('⬇ CSV: '+allTabs.length+' files downloaded','ok');showToast('⬇ '+allTabs.length+' CSV files');
+}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',4000);}
+updateDemoUI();
+</script>
