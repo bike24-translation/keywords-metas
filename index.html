@@ -249,14 +249,7 @@ tr:hover td{background:var(--blue100)}
               <button class="eye-btn" onclick="toggleVis('devWebhook',this)">👁</button>
             </div>
           </div>
-          <div class="n8n-info">
-            <div class="n8n-info-icon">ℹ️</div>
-            <div class="n8n-info-text">
-              <strong>n8n handles all API keys.</strong><br>
-              Semrush API key, Claude API key and all processing logic live in the n8n workflow.
-              This app only sends the CSV data + selected languages to the webhook and receives the processed results back.
-            </div>
-          </div>
+
           <div class="dev-save-row">
             <button class="btn-devsave" onclick="saveDevConfig()">Save Config</button>
             <span class="dev-saved" id="devSavedMsg">✓ Saved to session</span>
@@ -331,12 +324,12 @@ tr:hover td{background:var(--blue100)}
     <!-- Run Generation -->
     <div class="card">
       <div class="card-header navy">
-        <h2>Run Generation</h2>
+        <h2>Generate Keywords &amp; Metas</h2>
         <span id="progBadge" style="font-size:9px;color:var(--blue300)"></span>
       </div>
       <div class="card-body">
         <button class="btn-submit" id="startBtn" onclick="startGeneration()" disabled>
-          <span>Send to n8n &amp; Generate</span>
+          <span>Generate Keywords &amp; Metas</span>
           <span class="btn-arrow">→</span>
         </button>
         <div class="submit-hint" id="startHint">Upload a file and set webhook URL to get started</div>
@@ -498,7 +491,10 @@ function parseCSV(text,fname){
 function parseXLSX(buf,fname){
   const wb=XLSX.read(buf,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
   if(raw.length<2)return showToast('XLSX appears to be empty');
-  csvData=raw.slice(1).filter(r=>r[1]).map(r=>r.map(c=>String(c)));
+  // Filter out truly empty rows — check that the URL column (index 1) contains a non-empty, non-whitespace string
+  csvData=raw.slice(1)
+    .filter(r=>r[1]!==undefined && String(r[1]).trim().length>0)
+    .map(r=>r.map(c=>String(c)));
   showStats(fname,'xlsx',csvData.length,raw[0].length);logLine('▶ XLSX loaded: '+fname,'step');logLine('· '+csvData.length+' rows · '+raw[0].length+' columns','ok');
 }
 function showStats(fname,type,rows,cols){
